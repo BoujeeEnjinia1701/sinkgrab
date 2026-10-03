@@ -1,0 +1,41 @@
+# Card metadata consumed by https://designmolecule.com
+name: SinkGrab
+slug: sinkgrab
+repo: BoujeeEnjinia1701/sinkgrab         # GitHub repository, shown on every drawing and render
+area: Food and water security
+trl: 3                   # Technology Readiness Level, see .kit/STANDARDS.md section 9
+trl_target: 3
+design_state: constructable   # STANDARDS section 18; made constructable 2026-10-03 (SKG-DDR-002)
+trl_evidence:
+  - docs/01-problem.md
+  - docs/02-concept.md
+  - docs/03-requirements.md
+  - docs/decisions/0001-trl2-review-decisions.md
+  - docs/decisions/0002-design-for-construction.md
+  - docs/04-calcs/01-sizing.md
+  - docs/04-calcs/sizing.py
+  - cad/src/model.py
+  - cad/step/sinkgrab-assembly.step
+  - cad/step/sinkgrab-grab.step
+  - cad/step/sinkgrab-capstan.step
+  - cad/drawings/SKG-DWG-001.svg
+  - cad/drawings/SKG-DWG-001.pdf
+  - cad/drawings/SKG-DWG-002.svg
+  - bom/bom.csv
+  - docs/05-build-plan.md
+  - docs/06-design-decisions.md
+  - docs/05-build-plan/overview.png
+  - cad/src/build_plan_media.py
+  - cad/src/product_model.py
+shortlisted: false
+pitch: >-
+  Deepens village wells under water with a rope grab and under-curb scraper, without divers or pumps.
+problem: >-
+  Hand-dug wells go dry in the dry season because crews cannot dig far enough below the water table without pumps, and pumps and divers in wells kill people. Well diggers need a way to keep digging under water and sink the lining from the surface.
+budget_usd: 4000  # value-engineering target (STANDARDS section 18), kept under Amish's pre-approval of 2026-10-03
+difficulty: 3  # 1 easiest, 5 hardest
+hero_image: media/hero.png
+licenses:
+  hardware: CERN-OHL-S-2.0
+  software: MIT
+tags: [open-hardware, water-supply, hand-dug-wells, caisson-sinking, rope-tools, wash, drought-resilience]

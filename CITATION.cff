@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use or build on this design, please cite it as below."
+type: software
+title: "SinkGrab"
+abstract: "Deepens village wells under water with a rope grab and under-curb scraper, without divers or pumps."
+authors:
+  - given-names: Amish
+    family-names: Chadha
+    affiliation: Design Molecule
+    orcid: "https://orcid.org/0009-0000-8079-7141"
+repository-code: "https://github.com/BoujeeEnjinia1701/sinkgrab"
+url: "https://designmolecule.com"
+license: CERN-OHL-S-2.0
+keywords:
+  - open-hardware
+  - water-supply
+  - hand-dug-wells
+  - caisson-sinking
+  - rope-tools
+  - wash
+  - drought-resilience
