@@ -3,7 +3,7 @@ doc_id: SKG-DEC-001
 title: SinkGrab design decisions register
 project: SinkGrab
 doc_type: Design decisions register
-version: "0.1"
+version: "0.2"
 status: Draft
 date: '2026-10-03'
 author: Amish Chadha
@@ -13,6 +13,10 @@ revisions:
   date: '2026-10-03'
   author: Amish Chadha
   change: Register opened; design decisions made under Amish's pre-approvals of 2026-10-03; three requirement decisions (R4, R3, R1) proposed, awaiting Amish
+- version: "0.2"
+  date: '2026-10-03'
+  author: Amish Chadha
+  change: Round 2. Amish decided R4 (1A), R3 (2B) and R1 (3B) as recommended (SKG-DDR-003); three new questions raised while carrying them out, proposed, awaiting Amish
 ---
 
 # SinkGrab design decisions register
@@ -23,13 +27,13 @@ Every design decision still to be made, and every decision made, in one place. E
 
 ## Open decisions
 
-Requirements that are not met or at risk on paper are decided by Amish (2026-10-03: "A simple statement doesn't add value - ensure you are identifying a state and posing it as a clear recommendation for me to decide on"). The full state, options and effects are in `docs/REVIEW.md`, TRL 3, "Decisions for Amish".
+Requirements that are not met or at risk on paper are decided by Amish (2026-10-03: "A simple statement doesn't add value - ensure you are identifying a state and posing it as a clear recommendation for me to decide on"). The three round 1 decisions (R4, R3, R1) were decided on 2026-10-03 and are listed under Decisions made. The questions below were raised while carrying them out; the full state, options and effects are in `docs/REVIEW.md`, session 2026-10-03, round 2. Each is **Proposed, awaiting Amish**.
 
 | # | Decision needed | Options | Recommendation | Affects in the build | Source | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | R4 cycle time: 3.7 min at 10 m against the target, because two people give about 100 W and the hoist takes 111 s | A: a third person at the cranks for the hoist (3.1 min; one long two-hand handle, USD 10, 0.5 kg). B: a smaller grab, 240 mm shells (about 3.4 min; bite 15 L, R3 not met; USD 10 less, 4 kg less). C: keep two people and make 4 min the trial target (3.7 min; no cost or mass change) | **A** | One crank handle 240 mm long for two hands | SKG-CAL-001, J | Proposed, awaiting Amish |
-| 2 | R3 bite: 21.2 L at an assumed 75 % fill, 14.1 L at 50 %; the lips close with only 0.71 of the line pull, capped by the grab's 618 N submerged weight | A: keep the 2:1 tackle and settle the fill in test-pit trials (no change). B: 3:1 tackle with a second sheave in the head (lip force about 656 N, +50 %; +1.5 s a cycle; USD 35, 2.5 kg). C: 10 kg more head ballast (lip force about +14 %; working pull 1,114 N, link margin falls to 1.08; USD 10, 10 kg) | **B** | Head box gains a sheave and axle; line reeved three parts | SKG-CAL-001, B | Proposed, awaiting Amish |
-| 3 | R1 depth gained: the 8-ring string keeps sinking to 3 m only while skin friction stays below 1.66 kPa; the estimate is 1 to 3 kPa | A: as designed, toes 15 mm past the ring, and measure in the trial (no change). B: longer toes cutting 40 mm past the ring's outer face to loosen the soil against it (friction expected toward the low end; T-bar force +4 %; USD 10, 0.5 kg). C: sixteen saddles in place of eight (limit rises to 1.81 kPa; USD 340 with lines, 165 kg more kit) | **B** | Toe plates 25 mm longer; centralizer unchanged | SKG-CAL-001, I | Proposed, awaiting Amish |
+| 4 | Scraper fold travel and the 25 kg piece limit (R2, R9): the stop collar sits 30 mm below the sleeve foot, so the pole can lift only 30 mm on the sleeve before it picks the sleeve up, not the 320 mm the arms need to fold; and the longer arms (3B) bring the scraper head to 25.1 kg, 0.1 kg over R9 | A: remove the stop collar and let the struts carry the sleeve once the arms are folded, the folded geometry to be checked in the model (head 24.8 kg, R9 met; USD 0). B: lengthen the spike 320 mm and move the collar down with it (fold works; head about 25.9 kg, R9 not met unless the arms travel unpinned; about USD 5). C: no change (arms cannot fold, so the scraper passes only bores wider than the open toes; R2 not met) | **A** | Bottom pole: stop collar left off | SKG-CAL-001, H5 and K1; SKG-DDR-003 | Proposed, awaiting Amish |
+| 5 | R4 wording: R4 is "3 min or less at 10 m with two operators"; the design now hoists with three (1A) | A: restate R4 as "3 min or less at 10 m with three people at the cranks for the hoist" (status unchanged: 3.16 min, not met on paper, within 5 %). B: keep the wording and report R4 against two people (3.8 min) | **A** | None | SKG-CAL-001, J | Proposed, awaiting Amish |
+| 6 | Shear link margin: the 3:1 tackle added 3.3 kg to the grab (2.5 kg estimated), so the link's lowest release is 1.15 times the working pull (was 1.19) | A: keep it and watch for releases in the test-pit bite trial (no change). B: thin the ballast plates from 16 to 10 mm to win back 2 kg (margin about 1.18; head weight for opening 14.0 to 12.0 kg) | **A** | None | SKG-CAL-001, C5 | Proposed, awaiting Amish |
 
 ## To confirm when parts are bought
 
@@ -46,7 +50,7 @@ Requirements that are not met or at risk on paper are decided by Amish (2026-10-
 
 ## Value engineering
 
-Value-engineering target: USD 4,000 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 2,506 (USD 1,494 under the target). Main cost drivers and savings worth trying:
+Value-engineering target: USD 4,000 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 2,561 (USD 1,439 under the target), USD 55 more than before the round 2 decisions (SKG-DDR-003). Main cost drivers and savings worth trying:
 
 - The four-gas detector (USD 550) is the largest line; a crew or partner that already owns a pumped detector saves it.
 - The eight ballast saddles (USD 240) and their lines (USD 100): saddles cast in concrete inside a steel strap would cost less, at more bulk.
@@ -74,3 +78,11 @@ Value-engineering target: USD 4,000 (a hypothetical control target, not a limit)
 | 2026-10-03 | Design for construction: the fifteen changes of SKG-DDR-002 | Amish, as for item 1 | SKG-DDR-002 |
 | 2026-10-03 | Scraper working limit 25 m (12 pole sections) | Amish, as for item 1 | SKG-CAL-001, H |
 | 2026-10-03 | Appearance model additions for renders: wound rope, context collar, ground, tub, ring pieces and mannequin | Amish, as for item 1 | docs/REVIEW.md, TRL 3 |
+| 2026-10-03 | R4 cycle time (open decision 1): option A, a third person at the cranks for the hoist on a 240 mm two-hand handle; 3.16 min, not met on paper, within 5 % | Amish: "i approve all of the 47 recommendations provided by you. Execute them." | SKG-DDR-003, item 1 |
+| 2026-10-03 | R3 bite (open decision 2): option B, a 3:1 tackle with a second sheave in the head; lips about 687 N; R3 still at risk on the fill | Amish, as above | SKG-DDR-003, item 2 |
+| 2026-10-03 | R1 depth gained (open decision 3): option B, toes cutting 40 mm past the ring's outer face; R1 still at risk on the friction | Amish, as above | SKG-DDR-003, item 3 |
+| 2026-10-03 | Fold lift 320 mm so the longer arms fold inside a 400 mm bore (made to keep 3B constructable) | Amish, as above | SKG-DDR-003, Table 3 |
+
+## Change log
+
+- 2026-10-03, v0.2: open decisions 1 to 3 decided as recommended (1A, 2B, 3B) and carried into the design (SKG-DDR-003); new questions 4 to 6 opened.

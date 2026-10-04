@@ -1,4 +1,4 @@
-"""SinkGrab sizing calculations (SKG-CAL-001), TRL 3.
+"""SinkGrab sizing calculations (SKG-CAL-001 v0.2), TRL 3, with the round 2 requirement decisions (SKG-DDR-003).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every figure quoted in docs/04-calcs/01-sizing.md, tagged [A1], [B2] and so on, and writes
@@ -41,6 +41,7 @@ A = dict(
     hs_proof=1.5,             # HatchSide proof load factor
     eta_chain=0.95, eta_brg=0.98,
     crank_power=50.0,         # W per person sustained at a crank
+    crew_hoist=3,             # people at the cranks during the hoist: a third on the 240 mm two-hand handle (SKG-DDR-003, item 1)
     heave=400.0,              # N short heave by one person on a crank
     mu_brake=0.35, wrap_deg=270.0,
     lower_speed=0.5,          # m/s lowering on the brake
@@ -60,10 +61,10 @@ R, B = P["shell_R"] / 1000, P["shell_B"] / 1000
 V_geo = math.pi * R * R / 2 * B * 1000
 V_bite = V_geo * A["fill"]
 grab_keys = ["head", "ballast", "tie_rods", "shell_pins", "shell_a", "shell_b", "crosshead", "hinge_pin",
-             "cross_sheave", "cross_axle", "shear_link", "link_pin"]
+             "cross_sheave", "cross_axle", "upper_sheave", "upper_axle", "shear_link", "link_pin"]
 m_grab = sum(M[k] for k in grab_keys)
 say("A1", f"Closed shells hold {V_geo:.1f} L; at a {A['fill']:.0%} fill a bite is {V_bite:.1f} L (R3)")
-say("A2", f"Grab mass {m_grab:.1f} kg: shells {M['shell_a']:.1f} and {M['shell_b']:.1f}, head {M['head']:.1f} with ballast {M['ballast']:.1f}, tie rods {M['tie_rods']:.1f}")
+say("A2", f"Grab mass {m_grab:.1f} kg: shells {M['shell_a']:.1f} and {M['shell_b']:.1f}, head {M['head']:.1f} with ballast {M['ballast']:.1f}, head sheave and axle {M['upper_sheave'] + M['upper_axle']:.1f}, tie rods {M['tie_rods']:.1f}")
 m_soil = V_bite * A["rho_sand"]
 m_air = m_grab + m_soil + A["water_L"]
 W_air = m_air * g
@@ -75,13 +76,14 @@ say("A5", f"Working line pull {T_work:.0f} N with a {A['dyn']:.2f} dynamic allow
 
 # ------------------------------------------------------------------ B. closing force (R3)
 stroke = D["stroke"]
+parts = P["tackle_parts"]
 lip_travel = 2 * P["shell_R"] * math.radians(P["open_deg"])
-k_close = 2 * stroke / lip_travel
+k_close = parts * stroke / lip_travel
 T_close_max = m_sub * g
-say("B1", f"Head to crosshead stroke {stroke:.0f} mm; 2:1 tackle takes {2 * stroke:.0f} mm of line; lips travel {lip_travel:.0f} mm in all; open span {D['lip_span_open']:.0f} mm")
+say("B1", f"Head to crosshead stroke {stroke:.0f} mm; the {parts}:1 tackle takes {parts * stroke:.0f} mm of line; lips travel {lip_travel:.0f} mm in all; open span {D['lip_span_open']:.0f} mm")
 say("B2", f"Mean lip force is {k_close:.2f} of the line pull; the line can pull at most the submerged weight, {T_close_max:.0f} N, before the grab lifts, so the lips close with about {k_close * T_close_max:.0f} N ({k_close * T_close_max / (2 * P['shell_B'] / 1000):.0f} N per metre of lip)")
-k3 = 3 * stroke / lip_travel
-say("B3", f"With a 3:1 tackle the factor is {k3:.2f}, about {k3 * T_close_max:.0f} N at the lips; head weight for opening {M['head'] + M['ballast']:.1f} kg")
+k2 = 2 * stroke / lip_travel
+say("B3", f"With the former 2:1 tackle the factor was {k2:.2f}, about {k2 * T_close_max:.0f} N at the lips; the 3:1 tackle gives {k_close / k2 - 1:.0%} more; head weight for opening {M['head'] + M['ballast']:.1f} kg")
 fill_low = 0.5
 say("B4", f"At a {fill_low:.0%} fill in denser sand a bite is {V_geo * fill_low:.1f} L")
 
@@ -114,6 +116,9 @@ say("D1", f"At the rated grab load on layer 3 one person pushes {F_crank_one:.0f
 v = 2 * A["crank_power"] * eta / (W_air)
 rpm = v * 60 / (math.pi * D["layer_pd"][1] / 1000) * ratio
 say("D2", f"Two people at {A['crank_power']:.0f} W each hoist the full grab at {v * 60:.1f} m/min (crank {rpm:.0f} rpm on layer 2)")
+nh = A["crew_hoist"]
+v3 = nh * A["crank_power"] * eta / W_air
+say("D3", f"{nh} people (two on the 240 mm two-hand handle) hoist it at {v3 * 60:.1f} m/min with {F_crank_one / nh:.0f} N each on average")
 
 # ------------------------------------------------------------------ E. drum and rope (R7)
 cap = sum(D["layer_len"][:3])
@@ -198,14 +203,16 @@ say("I5", f"Tilt from two readings {d_ring:.0f} mm apart: ±{sig:.1f} mm, a reso
 h = A["depth"] + 1.05
 t_lower = h / A["lower_speed"]
 t_cranks = 20.0
-t_open, t_close = 10.0, 15.0
-t_hoist = h / v
+t_open = 10.0
+t_close2 = 15.0                                   # 2:1 tackle, estimate
+t_close = t_close2 + (parts - 2) * stroke / 1000 / v3   # the third part takes one more stroke of line
+t_hoist = h / v3
 t_dump = 10 + 15 + 10 + 10
 cyc = t_lower + t_cranks + t_open + t_close + t_hoist + t_dump
-say("J1", f"Cycle at {A['depth']:.0f} m: lower {t_lower:.0f} s, cranks off and on {t_cranks:.0f} s, open {t_open:.0f} s, close {t_close:.0f} s, hoist {t_hoist:.0f} s, doors and dump {t_dump:.0f} s: {cyc / 60:.1f} min")
-v3 = 3 * A["crank_power"] * eta / W_air
-cyc3 = cyc - t_hoist + h / v3
-say("J2", f"With three people at the cranks the hoist takes {h / v3:.0f} s and the cycle {cyc3 / 60:.1f} min")
+say("J1", f"Cycle at {A['depth']:.0f} m with {nh} at the cranks for the hoist: lower {t_lower:.0f} s, cranks off and on {t_cranks:.0f} s, open {t_open:.0f} s, close {t_close:.1f} s ({parts}:1), hoist {t_hoist:.0f} s, doors and dump {t_dump:.0f} s: {cyc:.0f} s, {cyc / 60:.2f} min, {cyc / 180 - 1:.0%} over 3 min")
+t_close_2p = t_close2 + (parts - 2) * stroke / 1000 / v
+cyc2 = cyc - t_hoist - t_close + h / v + t_close_2p
+say("J2", f"With two people at the cranks the hoist takes {h / v:.0f} s and the cycle {cyc2 / 60:.1f} min")
 rate = V_bite / (cyc / 60) * 60
 say("J3", f"Output {rate:.0f} L an hour of in-place sand; {vol * 1000 / rate:.1f} h of grabbing for {A['water']:.0f} m of sinking")
 
@@ -226,15 +233,15 @@ say("K4", f"Kit about {kit:.0f} kg without ropes, tubs and the HatchSide tripod"
 
 # ------------------------------------------------------------------ results table
 res = [
-    ("R1", "Water depth reached without de-watering", f"Sinks while skin friction < {f_crit:.2f} kPa; estimate {f_lo:.0f} to {f_hi:.0f} kPa", "At least 3 m", "At risk"),
+    ("R1", "Water depth reached without de-watering", f"Sinks while skin friction < {f_crit:.2f} kPa; estimate {f_lo:.0f} to {f_hi:.0f} kPa; toes cut {P['toe_r'] - (P['ring'][0] / 2 + P['ring'][1]):.0f} mm past the ring's outer face to loosen the soil", "At least 3 m", "At risk"),
     ("R2", "Fits rings of 0.8 to 1.3 m", f"Grab 468 mm across; scraper folds to {D['fold_toe_r']:.0f} mm radius; toes and skids adjustable", "0.8 to 1.3 m", "Met by design"),
-    ("R3", "Grab load per bite", f"{V_bite:.1f} L at 75 % fill; {V_geo * fill_low:.1f} L at 50 %", "At least 20 L", "At risk"),
-    ("R4", "Cycle time at 10 m, two operators", f"{cyc / 60:.1f} min", "3 min or less", "Not met on paper"),
+    ("R3", "Grab load per bite", f"{V_bite:.1f} L at 75 % fill; {V_geo * fill_low:.1f} L at 50 %; lips close with about {k_close * T_close_max:.0f} N through the {parts}:1 tackle", "At least 20 L", "At risk"),
+    ("R4", "Cycle time at 10 m, two operators", f"{cyc / 60:.1f} min with a third person at the cranks for the hoist ({cyc2 / 60:.1f} min with two)", "3 min or less", "Not met on paper" if cyc > 180 else "Met on paper"),
     ("R5", "Crank force", f"{F_crank_one / 2:.0f} N each with two ({F_crank_one:.0f} N for one)", "150 N or less", "Met on paper"),
     ("R6", "Tilt", f"Resolution 1 in {d_ring / sig:.0f}; corrected by scraping the high side and saddles", "1 in 80 or better", "Not verifiable at TRL 3"),
     ("R7", "Proof load of lifting parts", f"Proof {2 * m_air:.0f} kg within HatchSide proof {A['hs_swl'] * A['hs_proof']:.0f} kg; line factor {mbs / T_work:.1f}", "2 x working load", "Met on paper"),
     ("R8", "No person in the well", "Every task from the surface; doors close the shaft", "100 %", "Met by design"),
-    ("R9", "Portability", f"Heaviest piece {heavy[hk]:.1f} kg ({hk.lower()})", "25 kg or less; small pickup", "Met on paper"),
+    ("R9", "Portability", f"Heaviest piece {heavy[hk]:.1f} kg ({hk.lower()})", "25 kg or less; small pickup", "Met on paper" if heavy[hk] <= 25.0 else f"Not met on paper ({heavy[hk] - 25:.1f} kg over)"),
     ("R10", "Local build", "Steel section, plate, stick welding, drilling; rolled shell skins", "Stick welder and hand tools", "Met by design"),
     ("R11", "Prototype cost", f"USD {cost:,.2f}", f"Value-engineering target USD {target:,.0f}", "Met on paper, within the target"),
 ]

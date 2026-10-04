@@ -6,8 +6,8 @@ Exports STEP and STL into cad/step and cad/stl:
     sinkgrab-capstan     hand capstan: frame, winding drum with brake drum and ratchet wheel, bearings,
                          chain drive with shear pin hub, chain guard, pawl, weighted band brake, cranks
     sinkgrab-lead        foot cradle with lead sheave (stands under the HatchSide leg A foot) and drawbar
-    sinkgrab-grab        two-shell clamshell grab, closed: head with ballast plates, tie rods, shells,
-                         crosshead with hinge pin and sheave, shear link
+    sinkgrab-grab        two-shell clamshell grab, closed: head with ballast plates and head sheave, tie rods,
+                         shells, crosshead with hinge pin, sheave and dead-end lug, shear link
     sinkgrab-scraper     under-curb scraper head (deployed), one pole section and the turning T-bar
     sinkgrab-wellhead    well-head frame with two folding doors and four datum brackets
     sinkgrab-saddle      one ballast saddle
@@ -19,7 +19,8 @@ The HatchSide tripod, the well collar, the lining and the caisson rings are cont
 
 Constructable design, 2026-10-03 (SKG-DDR-002, decided under Amish's pre-approvals of 2026-10-03):
     one closing line does everything: the grab is lowered closed, opens under its head's weight when
-    the line is slacked on the bottom, and is closed and lifted by the same line through a 2:1 tackle;
+    the line is slacked on the bottom, and is closed and lifted by the same line through a 3:1 tackle
+    (crosshead sheave, head sheave, dead end on the crosshead; SKG-DDR-003);
     a calibrated shear link at the tackle's dead end limits the line to the tripod's 150 kg rating;
     the hand capstan is a single winding drum with a 4:1 chain drive, a shear pin hub, a ratchet and
     pawl, and a weighted band brake that is on unless its lever is lifted; a drawbar to a cradle
@@ -27,6 +28,10 @@ Constructable design, 2026-10-03 (SKG-DDR-002, decided under Amish's pre-approva
     the under-curb scraper is a centred pole head with two arms that the pole's weight opens under
     the cutting edge, turned from the surface with a T-bar; the well-head frame carries folding doors
     (cover, barrow deck and pole guide) and the tilt datum; ballast saddles straddle the top ring.
+
+Round 2 requirement decisions, 2026-10-03 (SKG-DDR-003, decided by Amish Chadha): a 240 mm two-hand handle
+on the +X crank for a third person on the hoist (R4); a 3:1 closing tackle with a second sheave in the head
+(R3); toes 25 mm further out, cutting 40 mm past a 1.0 m ring's outer face (R1).
 """
 import math
 import sys
@@ -63,6 +68,7 @@ PARAMS = {
     "hc": 850.0, "yc_off": -150.0,        # crank shaft height and offset from the drum axis (away from the well)
     "chain_p": 12.7, "z_small": 12, "z_big": 48, "sprocket_t": 8.0,
     "crank_r": 250.0, "handle": (32.0, 120.0),
+    "handle_long": 240.0,                 # +X crank: two-hand handle for a third person on the hoist (SKG-DDR-003, item 1)
     "shs": (40.0, 2.0),                   # frame tube
     "rail_half": 330.0,                   # base rails run y_d +/- this
     "ucp206": (42.9, 165.0, 48.0, 17.0, 80.0, 38.0),   # centre height, base length, base width, base t, housing dia, housing width
@@ -73,11 +79,16 @@ PARAMS = {
     "hinge_pin": 30.0, "rod_len": 420.0, "rod_bar": (30.0, 10.0), "shell_pin": (190.0, 25.0),
     "head_pin_x": 120.0, "head_block": (300.0, 120.0, 40.0), "ballast_plate": (190.0, 110.0, 16.0),
     "open_deg": 50.0,
+    "tackle_parts": 3,                    # 3:1 closing tackle: second sheave in the head (SKG-DDR-003, item 2)
+    "head_sheave_skew": 20.0,             # deg about Z, so the descending part clears the guide tube with both parts vertical
+    "head_sheave_z": 85.0,                # head sheave centre below the head box underside
     # scraper (local: pole axis = Z, z = 0 at the toe cutting level, deployed)
     "pole": (42.4, 2.6), "pole_sec": 2000.0, "spigot": (36.0, 150.0),
-    "hub": (70.0, 90.0), "pivot": (45.0, 80.0), "toe_r": 590.0, "arm_bar": (50.0, 10.0),
+    "hub": (70.0, 90.0), "pivot": (45.0, 80.0), "toe_r": 615.0,   # was 590; toes 40 mm past a 1.0 m ring (SKG-DDR-003, item 3)
+    "arm_bar": (50.0, 10.0),
     "toe": (100.0, 80.0, 10.0), "sleeve": (54.0, 110.0), "foot_d": 250.0, "sump": 330.0,
-    "cent_z": 700.0, "fold_lift": 300.0, "cent_r": 440.0, "skid": (40.0, 150.0, 10.0), "head_len": 1300.0,
+    "cent_z": 700.0, "cent_r": 440.0, "skid": (40.0, 150.0, 10.0), "head_len": 1300.0,
+    "fold_lift": 320.0,                   # was 300: the longer arms still fold inside a 400 mm bore (SKG-DDR-003, item 3)
     "tbar": (33.7, 1400.0), "socket": (48.3, 200.0),
     # well-head frame and doors
     "wh_frame": (1360.0, 50.0, 5.0),      # inner opening (square), angle leg, angle thickness
@@ -422,7 +433,8 @@ def capstan_parts(P=PARAMS):
         arm = prism_yz(_hull([(yc + 22 * math.cos(t), hc + 22 * math.sin(t)) for t in [2 * math.pi * k / 24 for k in range(24)]] +
                              [(ey + 18 * math.cos(t), ez + 18 * math.sin(t)) for t in [2 * math.pi * k / 24 for k in range(24)]]), x0, x1)
         arm -= xcyl(yc, hc, P["crank_shaft"] / 2, x0 - 1, x1 + 1)
-        hx0, hx1 = (x0 - P["handle"][1], x0) if sgn < 0 else (x1, x1 + P["handle"][1])
+        hl = P["handle"][1] if sgn < 0 else P["handle_long"]                         # +X crank: 240 mm two-hand handle
+        hx0, hx1 = (x0 - hl, x0) if sgn < 0 else (x1, x1 + hl)
         hnd = xcyl(ey, ez, P["handle"][0] / 2, hx0, hx1)
         cr += [arm, hnd]
     out["cranks"] = fuse(cr)
@@ -576,10 +588,21 @@ def grab_parts(P=PARAMS, open_deg=0.0):
     # crosshead: two 10 mm plates either side of the sheave; sheave axle 120 above the hinge
     so, rp, sw, sb = P["sheave"]
     zs = 120.0
+    # 3:1 tackle (SKG-DDR-003, item 2): line down the guide tube, under the crosshead sheave, up over a head
+    # sheave skewed about Z so both of its rope parts hang vertical, down to the dead end on the crosshead
+    al = math.radians(P["head_sheave_skew"])
+    xd, yd = rp - 2 * rp * math.cos(al), -2 * rp * math.sin(al)        # dead-end rope position
+    zl = 180.0                                                           # dead-end lug pin height above the hinge
     ch = []
     for y0 in (-sw / 2 - 1 - 10, sw / 2 + 1):
-        pl = prism_xz(_hull([(40 * math.cos(a), 40 * math.sin(a)) for a in [2 * math.pi * k / 24 for k in range(24)]] +
-                            [(45 * math.cos(a), zs + 45 * math.sin(a)) for a in [2 * math.pi * k / 24 for k in range(24)]]), y0, y0 + 10)
+        circ = [(40 * math.cos(a), 40 * math.sin(a)) for a in [2 * math.pi * k / 24 for k in range(24)]] + \
+               [(45 * math.cos(a), zs + 45 * math.sin(a)) for a in [2 * math.pi * k / 24 for k in range(24)]]
+        pl = prism_xz(_hull(circ), y0, y0 + 10)
+        if y0 < 0:                                                       # -Y plate carries the dead-end lug
+            pl += prism_xz(_hull([(45 * math.cos(a), zs + 45 * math.sin(a)) for a in [2 * math.pi * k / 24 for k in range(24)]] +
+                                 [(xd + 22 * math.cos(a), zl + 22 * math.sin(a)) for a in [2 * math.pi * k / 24 for k in range(24)]]), y0, y0 + 10)
+            pl += bx(xd - 6, xd + 6, yd - 15, y0 + 0.5, zl - 25, zl + 15)   # 12 mm dead-end lug welded to the plate
+            pl -= xcyl(yd, zl, 8.25, xd - 7, xd + 7)
         pl -= ycyl(0, 0, hp / 2 + 0.25, y0 - 1, y0 + 11)
         pl -= ycyl(0, zs, sb / 2 + 0.25, y0 - 1, y0 + 11)
         ch.append(pl)
@@ -615,23 +638,32 @@ def grab_parts(P=PARAMS, open_deg=0.0):
     for s in (-1, 1):
         hb.append(ycyl(s * xh, zh, 12.5, -yp, yp))
     hb.append(zcyl(-rp, 0, 15.0, z0 - 25, z1 + 20))                                       # rope guide tube
-    hb.append(bx(rp - 6, rp + 6, -20, 20, zh - 75, z0))                                   # dead-end lug
     hb.append(bx(-30, 30, -6, 6, z1, z1 + 50))                                            # recovery-line eye
+    # head sheave of the 3:1 tackle: two 8 mm cheeks welded under the box, skewed about Z
+    zc = z0 - P["head_sheave_z"]
+    hs_place = Pos(rp - rp * math.cos(al), -rp * math.sin(al), 0) * Rot(0, 0, P["head_sheave_skew"])
+    cheek_pts = [(28 * math.cos(a), zc + 28 * math.sin(a)) for a in [2 * math.pi * k / 24 for k in range(24)]] + \
+                [(-35, z0 + 0.5), (35, z0 + 0.5), (-35, zc + 30), (35, zc + 30)]
+    for c0 in (-sw / 2 - 1 - 8, sw / 2 + 1):
+        cheek = prism_xz(_hull(cheek_pts), c0, c0 + 8) - ycyl(0, zc, sb / 2 + 0.25, c0 - 1, c0 + 9)
+        hb.append(hs_place * cheek)
     head = fuse(hb)
     head -= zcyl(-rp, 0, 7.0, z0 - 26, z1 + 21)
-    head -= xcyl(0, zh - 55, 8.25, rp - 7, rp + 7)
     head -= ycyl(0, z1 + 28, 10.0, -7, 7)
     out["head"] = head
+    out["upper_sheave"] = hs_place * ((ycyl(0, zc, so, -sw / 2, sw / 2) - ycyl(0, zc, sb / 2, -sw / 2 - 1, sw / 2 + 1)) -
+                                      (ycyl(0, zc, rp + 4.5, -4.5, 4.5) - ycyl(0, zc, rp - 4.5, -5, 5)))
+    out["upper_axle"] = hs_place * ycyl(0, zc, sb / 2 - 0.25, -sw / 2 - 9 - 6, sw / 2 + 9 + 6)
     bpx, bpy, bpt = P["ballast_plate"]
     out["ballast"] = Compound([bx(-bpx / 2, bpx / 2, s * (hy / 2) if s > 0 else -(hy / 2 + bpt), s * (hy / 2 + bpt) if s > 0 else -(hy / 2), z0, z0 + bpy)
                                for s in (-1, 1)])
-    # shear link: two 6 mm side plates on a 16 mm pin through the dead-end lug, calibrated 6 mm pin below
-    zl = zh - 55
-    lk = [bx(rp - 13, rp - 7, -15, 15, zl - 75, zl + 12), bx(rp + 7, rp + 13, -15, 15, zl - 75, zl + 12)]
-    lk.append(xcyl(0, zl, 8.0, rp - 14, rp + 14))
-    link = fuse(lk) - xcyl(0, zl - 62, 3.25, rp - 14, rp + 14)
+    # shear link: two 6 mm side plates on a 16 mm pin through the crosshead's dead-end lug, calibrated pin
+    # 62 mm above it; the line's thimble hangs on the calibrated pin
+    lk = [bx(xd - 13, xd - 7, yd - 15, yd + 15, zl - 12, zl + 75), bx(xd + 7, xd + 13, yd - 15, yd + 15, zl - 12, zl + 75)]
+    lk.append(xcyl(yd, zl, 8.0, xd - 14, xd + 14))
+    link = fuse(lk) - xcyl(yd, zl + 62, 3.25, xd - 14, xd + 14)
     out["shear_link"] = link
-    out["link_pin"] = xcyl(0, zl - 62, 3.0, rp - 15, rp + 15)
+    out["link_pin"] = xcyl(yd, zl + 62, 3.0, xd - 15, xd + 15)
     return out
 
 
@@ -861,6 +893,8 @@ BOM = {  # key: (BOM line, plain name)
     "crosshead": (13, "Crosshead plates"),
     "hinge_pin": (13, "Hinge pin"),
     "cross_axle": (13, "Crosshead sheave axle"),
+    "upper_axle": (10, "Head sheave axle"),
+    "upper_sheave": (25, "Head sheave of the 3:1 tackle"),
     "shear_link": (14, "Shear link"),
     "link_pin": (14, "Calibrated link pin"),
     "scraper_pole": (15, "Scraper head: bottom pole with hub, centralizer and spike"),
@@ -889,12 +923,13 @@ GROUP = {"capstan": ["frame", "drum", "drum_bearings", "crank_bearings", "crank_
                      "chain", "guard", "cranks", "pawl", "brake", "stakes"],
          "lead": ["cradle", "lead_sheave", "lead_axle", "drawbar", "draw_pins"],
          "grab": ["head", "ballast", "tie_rods", "shell_pins", "shell_a", "shell_b", "crosshead", "hinge_pin",
-                  "cross_sheave", "cross_axle", "shear_link", "link_pin"],
+                  "cross_sheave", "cross_axle", "upper_sheave", "upper_axle", "shear_link", "link_pin"],
          "scraper": ["scraper_pole", "arms", "arm_pins", "sleeve", "sleeve_pins", "struts", "pole_section", "tbar"],
          "wellhead": ["wh_frame", "doors"],
          "saddle": ["saddles"]}
 
-BOUGHT = {"drum_bearings", "crank_bearings", "chain", "shear_pin", "lead_sheave", "cross_sheave", "hs_sheave", "rope", "link_pin"}
+BOUGHT = {"drum_bearings", "crank_bearings", "chain", "shear_pin", "lead_sheave", "cross_sheave", "upper_sheave", "hs_sheave", "rope",
+          "link_pin"}
 
 
 def grab_site(P=PARAMS, z_hinge=None):
@@ -984,7 +1019,8 @@ def checks(P=PARAMS, verbose=True):
              ("draw_pins", "frame"),
              ("hinge_pin", "crosshead"), ("hinge_pin", "shell_a"), ("hinge_pin", "shell_b"), ("cross_axle", "crosshead"),
              ("cross_sheave", "cross_axle"), ("tie_rods", "head"), ("tie_rods", "shell_pins"), ("shell_pins", "shell_a"),
-             ("ballast", "head"), ("shear_link", "head"), ("link_pin", "shear_link"),
+             ("ballast", "head"), ("upper_axle", "head"), ("upper_sheave", "upper_axle"), ("shear_link", "crosshead"),
+             ("link_pin", "shear_link"),
              ("arms", "arm_pins"), ("arm_pins", "scraper_pole"), ("struts", "arm_pins"), ("struts", "sleeve_pins"), ("sleeve_pins", "sleeve"),
              ("sleeve", "scraper_pole"), ("pole_section", "scraper_pole"), ("tbar", "pole_section"),
              ("doors", "wh_frame")]
@@ -1035,7 +1071,7 @@ def masses(P=PARAMS):
             m[k] = _vol(v) * 1e-9 * rho[mat]
     m["saddle"] = _vol(saddle_part(P)) * 1e-9 * P["rho_steel"]
     m["doors"] = door_mass(P) * 2
-    for k in ("lead_sheave", "cross_sheave"):
+    for k in ("lead_sheave", "cross_sheave", "upper_sheave"):
         m[k] = 2.2                                                # bought sheave with bearing, catalogue estimate
     m["hs_sheave"] = 2.2
     return m

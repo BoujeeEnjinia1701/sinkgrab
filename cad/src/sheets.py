@@ -1,4 +1,4 @@
-"""SinkGrab drawing sheets, Rev P2 (TRL 3, constructable design SKG-DDR-002).
+"""SinkGrab drawing sheets, Rev P3 (TRL 3, constructable design SKG-DDR-002, round 2 decisions SKG-DDR-003).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/SKG-DWG-001 (well-head layout: capstan, lead cradle, drawbar, well-head frame
@@ -19,7 +19,8 @@ from model import PARAMS as P, derived, build_components, grab_parts, scraper_pa
 
 DATE = "2026-10-03"
 REVS = [("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
-        ("P2", "SKG-DDR-002: design for construction", DATE, "AC")]
+        ("P2", "SKG-DDR-002: design for construction", DATE, "AC"),
+        ("P3", "SKG-DDR-003: 3:1 tackle, two-hand crank handle, toes 40 mm past the ring", DATE, "AC")]
 
 
 def safe_project_views(part, workdir, line_weight=0.35):
@@ -58,7 +59,7 @@ def layout_sheet():
             "head", "ballast", "tie_rods", "shell_a", "shell_b", "crosshead", "cross_sheave", "rope", "hs_sheave"]
     work = ROOT / "cad" / "drawings" / "_views1"
     views = safe_project_views(Compound([C[k].shape for k in keys]), work, line_weight=0.25)
-    s = Sheet(project="SinkGrab", title="Rope grab well-deepening kit: well-head layout", dwg_no="SKG-DWG-001", rev="P2",
+    s = Sheet(project="SinkGrab", title="Rope grab well-deepening kit: well-head layout", dwg_no="SKG-DWG-001", rev="P3",
               author="Amish Chadha", date=DATE, scale=1 / 60, theme="technical",
               material="Layout only; parts per SKG-DWG-002 and SKG-DWG-101 to 117. HatchSide tripod not shown. PRELIMINARY, NOT FOR FABRICATION",
               revisions=REVS)
@@ -91,7 +92,7 @@ def tools_sheet():
     both = Compound([Pos(-900, 0, 0) * grab, Pos(500, 0, 300) * scr])
     work = ROOT / "cad" / "drawings" / "_views2"
     views = safe_project_views(both, work, line_weight=0.3)
-    s = Sheet(project="SinkGrab", title="Clamshell grab and under-curb scraper: general arrangement", dwg_no="SKG-DWG-002", rev="P2",
+    s = Sheet(project="SinkGrab", title="Clamshell grab and under-curb scraper: general arrangement", dwg_no="SKG-DWG-002", rev="P3",
               author="Amish Chadha", date=DATE, scale=1 / 20, theme="technical",
               material="Steel plate and section, wear-resistant lips and toes; bought sheave and pins per bom/bom.csv. PRELIMINARY, NOT FOR FABRICATION",
               revisions=REVS)
@@ -101,7 +102,7 @@ def tools_sheet():
         f"Grab shells R {P['shell_R']:.0f} x {P['shell_B']:.0f} wide; closed span {2 * (P['shell_R'] + P['shell_t']):.0f}; 28.3 L",
         f"Hinge pin {P['hinge_pin']:.0f}; tie rods 30 x 10 at {P['rod_len']:.0f} centres; head pins at x +/- {P['head_pin_x']:.0f}",
         f"Head to crosshead stroke {D['stroke']:.0f}; open {P['open_deg']:.0f} deg, lips {D['lip_span_open']:.0f} apart",
-        "Closing line: guide tube, crosshead sheave, back up to the shear link (2:1)",
+        "Closing line: guide tube, crosshead sheave, head sheave, down to the shear link (3:1)",
         "Shear link pin about 1.9 mm, releases 1.20 to 1.47 kN (break-tested)",
         f"Scraper toes at {P['toe_r']:.0f} radius, {P['toe_r'] - P['ring'][0] / 2 - P['ring'][1]:.0f} beyond a 1.0 m ring's outer face",
         f"Arms fold to {D['fold_toe_r']:.0f} radius when the pole is lifted {P['fold_lift']:.0f} on the sleeve",

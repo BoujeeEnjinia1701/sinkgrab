@@ -32,7 +32,7 @@ RENDER_VIEWS = [
              "the spoil tub; HatchSide tripod in grey"},
     {"name": "exploded", "groups": ["grab"], "explode": True, "el": 22, "az": -40,
      "note": "Exploded clamshell grab from the front right and above (about 22 deg elevation): head with ballast "
-             "plates and shear link, tie rods, crosshead with sheave and hinge pin, two shells"},
+             "plates and head sheave, tie rods, crosshead with sheave, hinge pin and shear link, two shells"},
     {"name": "detail", "groups": ["detail"], "explode": False, "el": 15, "az": -60,
      "note": "Detail from the front right, slightly above (about 15 deg elevation): scraper arms open under the "
              "cutting edge of a cut-away bottom ring; ballast saddle astride a cut-away top ring"},
@@ -48,7 +48,7 @@ LOOK = {  # key: (colour, material)
     "head": ("#2563EB", "painted steel"), "ballast": ("#1E3A8A", "painted steel"), "tie_rods": ("#475569", "painted steel"),
     "shell_pins": ("#9CA3AF", "zinc plated steel"), "shell_a": ("#EA580C", "painted steel"), "shell_b": ("#F59E0B", "painted steel"),
     "crosshead": ("#15803D", "painted steel"), "hinge_pin": ("#9CA3AF", "bright steel"), "cross_sheave": ("#D4A017", "zinc plated steel"),
-    "cross_axle": ("#9CA3AF", "steel"), "shear_link": ("#DC2626", "painted steel"), "link_pin": ("#B91C1C", "steel"),
+    "cross_axle": ("#9CA3AF", "steel"), "upper_sheave": ("#D4A017", "zinc plated steel"), "upper_axle": ("#9CA3AF", "steel"), "shear_link": ("#DC2626", "painted steel"), "link_pin": ("#B91C1C", "steel"),
     "scraper_pole": ("#0369A1", "painted steel"), "arms": ("#E11D48", "painted steel"), "arm_pins": ("#9CA3AF", "steel"),
     "sleeve": ("#7C3AED", "painted steel"), "sleeve_pins": ("#9CA3AF", "steel"), "struts": ("#A16207", "painted steel"),
     "pole_section": ("#0284C7", "painted steel"), "tbar": ("#1E40AF", "painted steel"), "wh_frame": ("#0F766E", "galvanised steel"),
@@ -57,7 +57,8 @@ LOOK = {  # key: (colour, material)
 }
 EXPLODE = {"head": (0, 0, 520), "ballast": (0, 0, 640), "shear_link": (0, 0, 380), "link_pin": (0, 0, 380),
            "tie_rods": (0, 0, 260), "shell_pins": (0, 0, 180), "shell_a": (260, 0, -60), "shell_b": (-260, 0, -60),
-           "crosshead": (0, 0, 140), "cross_sheave": (0, 0, 200), "cross_axle": (0, 0, 200), "hinge_pin": (0, 420, 0)}
+           "crosshead": (0, 0, 140), "cross_sheave": (0, 0, 200), "cross_axle": (0, 0, 200), "hinge_pin": (0, 420, 0),
+           "upper_sheave": (0, -220, 520), "upper_axle": (0, -300, 520)}
 
 
 def product_parts(P=P):

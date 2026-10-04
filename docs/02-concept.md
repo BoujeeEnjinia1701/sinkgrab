@@ -3,7 +3,7 @@ doc_id: SKG-PRC-001
 title: SinkGrab design precis
 project: SinkGrab
 doc_type: Precis
-version: "0.3"
+version: "0.4"
 status: Draft
 date: '2026-10-03'
 author: Amish Chadha
@@ -21,6 +21,10 @@ revisions:
   date: '2026-10-03'
   author: Amish Chadha
   change: TRL 3 numbers from SKG-CAL-001 on the constructable design (SKG-DDR-002); concept media from the model
+- version: "0.4"
+  date: '2026-10-03'
+  author: Amish Chadha
+  change: 'Numbers after Amish''s round 2 decisions (SKG-DDR-003): three people on the hoist, 3:1 tackle, toes 40 mm past the ring'
 ---
 
 # SinkGrab design precis
@@ -33,15 +37,15 @@ Deepens village wells under water with a rope grab and under-curb scraper, witho
 
 ## Summary
 
-SinkGrab lets a village crew dig the last 3 m of a caisson well under water from the surface. A clamshell grab on one rope digs sand out of the flooded rings, an under-curb scraper on a pole cuts the soil from under the bottom ring so the lining sinks, and a hand capstan worked by two people does the lifting through the HatchSide tripod. On paper it lifts 21 L a bite with 52 N on each crank handle and never loads the tripod past its 150 kg rating; the cycle at 10 m is about 3.7 min, longer than the 3 min target. The parts cost about USD 2,506 against a value-engineering target of USD 4,000.
+SinkGrab lets a village crew dig the last 3 m of a caisson well under water from the surface. A clamshell grab on one rope digs sand out of the flooded rings, an under-curb scraper on a pole cuts the soil from under the bottom ring so the lining sinks, and a hand capstan worked by three people during the hoist does the lifting through the HatchSide tripod. On paper it lifts 21 L a bite with about 36 N each on the crank handles and never loads the tripod past its 150 kg rating; the cycle at 10 m is about 3.16 min, 5 % over the 3 min target. The parts cost about USD 2,561 against a value-engineering target of USD 4,000.
 
 ## How it works
 
 The crew stands the HatchSide tripod over the well and replaces its winch with SinkGrab's line: an 8 mm rope runs from the hand capstan on the ground, through a lead sheave in a cradle under the tripod's leg A foot, up beside the leg, over the head sheave and straight down the well. A drawbar joins the capstan to the cradle, so the rope pull is carried inside the kit and the tripod sees the same loads as with its own winch.
 
-The grab is lowered closed on the capstan's band brake. On the bottom the crew slacks the line by about 0.3 m: the grab's head settles under its own weight and pushes the two shells open into the sand. Cranking then pulls the crosshead up toward the head through a 2:1 tackle inside the grab, which closes the shells on a bite and lifts it. At the top the crew closes the well-head doors under the grab, lowers it into a spoil tub standing on them and slacks the line again: the shells open and the sand falls into the tub. Cranking closes the empty grab and lifts it off; the doors open and the cycle repeats.
+The grab is lowered closed on the capstan's band brake. On the bottom the crew slacks the line by about 0.3 m: the grab's head settles under its own weight and pushes the two shells open into the sand. Cranking then pulls the crosshead up toward the head through a 3:1 tackle inside the grab (crosshead sheave, head sheave, dead end on the crosshead), which closes the shells on a bite and lifts it. At the top the crew closes the well-head doors under the grab, lowers it into a spoil tub standing on them and slacks the line again: the shells open and the sand falls into the tub. Cranking closes the empty grab and lifts it off; the doors open and the cycle repeats.
 
-When the centre has been dug about 330 mm below the cutting edge, the scraper goes down on 2 m pole sections. Its foot lands in the sump, the pole's weight slides it down through the foot sleeve, and two struts push two arms out until their toes reach 15 mm beyond the ring's outer face, under the cutting edge. Two people turn the pole with a T-bar through the hole in the closed doors, and the toes cut a ring of soil from under the wall, which the grab then removes. Lifting the pole folds the arms.
+When the centre has been dug about 330 mm below the cutting edge, the scraper goes down on 2 m pole sections. Its foot lands in the sump, the pole's weight slides it down through the foot sleeve, and two struts push two arms out until their toes reach 40 mm beyond the ring's outer face, under the cutting edge. Two people turn the pole with a T-bar through the hole in the closed doors, and the toes cut a ring of soil from under the wall, which the grab then removes. Lifting the pole folds the arms.
 
 Every cycle the crew reads the dip tape at four datum holes on the well-head frame. If one side is ahead, they scrape only on the high side and hang ballast saddles on the high side of the top ring.
 
@@ -51,9 +55,9 @@ Every cycle the crew reads the dip tape at four datum holes on the well-head fra
 
 | # | Component | Role |
 | --- | --- | --- |
-| 1 to 7 | Hand capstan: frame, winding drum with brake drum and ratchet wheel, pawl, crank shaft with shear pin hub, removable cranks, chain guard, weighted band brake, stakes | Two-person hoist; holds the load at any depth, limits the line pull |
+| 1 to 7 | Hand capstan: frame, winding drum with brake drum and ratchet wheel, pawl, crank shaft with shear pin hub, removable cranks, chain guard, weighted band brake, stakes | Hoist for three people (two on the 240 mm two-hand handle); holds the load at any depth, limits the line pull |
 | 8, 9 | Foot cradle with lead sheave, and drawbar | Turns the line up leg A; carries the pull back to the capstan |
-| 10 to 14 | Clamshell grab: head with ballast plates, tie rods, two shells, crosshead with hinge pin and sheave, shear link | Digs and lifts 21 L a bite under water on one line |
+| 10 to 14 | Clamshell grab: head with ballast plates and head sheave, tie rods, two shells, crosshead with hinge pin, sheave and dead-end lug, shear link | Digs and lifts 21 L a bite under water on one line |
 | 15 to 17 | Under-curb scraper head, 2 m pole sections, T-bar | Cuts the soil from under the ring's cutting edge |
 | 18, 19 | Well-head frame with datum brackets, folding doors | Covers the shaft, carries the spoil tub, guides the pole, holds the tilt datum |
 | 20 | Ballast saddles (8) | Add weight on the high side of the top ring |
@@ -66,25 +70,26 @@ Every cycle the crew reads the dip tape at four datum holes on the well-head fra
 | Quantity | Value | Assumption or basis |
 | --- | --- | --- |
 | Bite | 21.2 L (28.3 L closed) | 75 % fill in loose saturated sand |
-| Grab mass | 47.9 kg; 93 kg full in air | Sand 2.0 kg/L, 3 L of water |
-| Working line pull | 1,006 N | 1.1 for hand hoisting |
-| Crank force at rated load | 52 N each, two people | 4:1 chain, 250 mm cranks, outer layer |
-| Hoist speed | 6.0 m/min | 50 W per person |
-| Cycle at 10 m | 3.7 min (3.1 min with three at the cranks) | Lowering 0.5 m/s on the brake |
+| Grab mass | 51.2 kg; 97 kg full in air | Sand 2.0 kg/L, 3 L of water |
+| Lip force | About 687 N | 3:1 tackle; line capped by the submerged weight |
+| Working line pull | 1,042 N | 1.1 for hand hoisting |
+| Crank force at rated load | 54 N each with two people, about 36 N with three | 4:1 chain, 250 mm cranks, outer layer |
+| Hoist speed | 8.7 m/min with three people (5.8 with two) | 50 W per person |
+| Cycle at 10 m | 3.16 min with three on the hoist (3.8 min with two) | Lowering 0.5 m/s on the brake |
 | Crank shear pin | Line limited to 2,107 N | 3 mm S235, ±20 % |
 | Shear link | Releases at 1,202 to 1,469 N | Pin break-tested, ±10 % |
 | Tripod | Inside its 150 kg rating and 225 kg proof | HatchSide HTS-CAL-001 |
-| Scraper | 136 N each on the T-bar; arms fold to 364 mm radius | 150 N per toe in loose sand |
+| Scraper | 142 N each on the T-bar; toes 40 mm past the ring; arms fold to 377 mm radius with a 320 mm lift | 150 N per toe in loose sand |
 | Sinking | Continues while skin friction is below 1.66 kPa | 8-ring string, 8 saddles |
-| Heaviest piece | 24.6 kg (scraper head) | Model masses |
-| Parts cost | USD 2,506 | Value-engineering target USD 4,000 |
+| Heaviest piece | 25.1 kg (scraper head), 0.1 kg over R9 | Model masses |
+| Parts cost | USD 2,561 | Value-engineering target USD 4,000 |
 
 ## Key design choices
 
 All decided under Amish's pre-approvals of 2026-10-03 (SKG-DDR-001 and SKG-DDR-002).
 
 - **One line does everything.** A two-line grab needs a second winch and two people keeping two ropes in step. SinkGrab's grab is lowered closed and opened by its own head weight, so one capstan and one rope dig, lift and dump.
-- **The tripod never sees more than its rating.** A calibrated shear link at the grab's tackle releases between 1.20 and 1.47 kN and opens the grab if it snags; a 3 mm shear pin in the crank hub caps the line at 2.1 kN, under the tripod's proof load, whatever two people do at the cranks.
+- **The tripod never sees more than its rating.** A calibrated shear link at the grab's tackle releases between 1.20 and 1.47 kN and opens the grab if it snags; a 3 mm shear pin in the crank hub caps the line at 2.1 kN, under the tripod's proof load, whatever the crew does at the cranks.
 - **The rope pull stays inside the kit.** The drawbar between the capstan and the cradle under the leg A foot means nothing is anchored to the ground but the tripod's own feet.
 - **The brake is on unless someone holds it off.** A weighted lever applies the band brake when it is let go; the cranks come off before any lowering.
 - **The scraper is centred and opened by weight.** A pole with a centralizer reaches any depth to 25 m, and its own weight opens the arms only when the foot is on the sump floor.
