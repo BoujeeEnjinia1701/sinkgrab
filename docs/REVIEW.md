@@ -1,67 +1,83 @@
 # Review note: SinkGrab
 
-## Session 2026-10-03: round 2 requirement decisions applied
+## Session 2026-10-04: Amish's requirement decisions carried out (round 3)
 
-Amish, 2026-10-03: "i approve all of the 47 recommendations provided by you. Execute them." For SinkGrab that decides the three requirement decisions of the TRL 3 session below as recommended: 1A (R4), 2B (R3) and 3B (R1). They are recorded in `docs/decisions/0003-requirement-decisions-round2.md` (SKG-DDR-003) and moved to Decisions made in `docs/06-design-decisions.md` (SKG-DEC-001 v0.2). Phase cap TRL 3 kept: no test articles, test plans, firmware, build-log entries or purchasing lists. Nothing was committed or pushed.
+Amish Chadha (owner), 2026-10-04: "For round 3, I agree with all your proposed recommendations". For SinkGrab that decides item 5A, open decision 4 of SKG-DEC-001 (scraper sleeve travel), as recommended. Recorded in `docs/decisions/0004-scraper-sleeve-travel.md` (SKG-DDR-004) and moved to Decisions made in `docs/06-design-decisions.md` (SKG-DEC-001 v0.3). Nothing was committed or pushed.
 
-**What changed.**
+### Changes made and new results
 
-- **1A, R4: third person on the hoist.** `cad/src/model.py`: `handle_long` 240 mm on the +X crank (two hands), the -X crank keeps its 120 mm handle. BOM line 4 USD 45 to 55.
-- **2B, R3: 3:1 closing tackle.** `cad/src/model.py`: a second bought 150 mm sheave (`upper_sheave`, `upper_axle`) under the head box between two 8 mm cheeks, skewed 20 degrees about the vertical so both of its rope parts hang straight (`head_sheave_skew`, `head_sheave_z`); the dead-end lug and the shear link move from the head to the crosshead's -Y plate, 180 mm above the hinge (`tackle_parts` 3). BOM lines 10 (USD 45 to 50), 13, 14 and 25 (three sheaves to four).
-- **3B, R1: toes 40 mm past the ring.** `toe_r` 590 to 615 mm (arms 25 mm longer). BOM line 15 USD 60 to 70.
-- **Made to keep 3B constructable.** `fold_lift` 300 to 320 mm: with the longer arms a 300 mm lift folded the toes only to 405.5 mm, outside the 400 mm bore of a 0.8 m ring; 320 mm folds them to 377 mm. The model checks report no overlaps and no floating parts.
-- `docs/04-calcs/sizing.py` (crew of three on the hoist, tackle parts from the model, closing time with the third part, R4 and R9 status computed) re-run: `results.csv` and `docs/04-calcs/01-sizing.md` (SKG-CAL-001 v0.2).
-- Regenerated with the repo's scripts: STEP and STL (`cad/src/model.py`), SKG-DWG-001 and 002 Rev P3 (`cad/src/sheets.py`), concept media and `media/model.glb` at linear deflection 1.0 and angular 0.35 (`cad/src/concept_media.py`), the build plan overview, making sketches SKG-DWG-101 to 117, joints and steps (`cad/src/build_plan_media.py`, with its notes updated). `cad/src/product_model.py` gained the head sheave and axle for the next render.
-- Text: `docs/03-requirements.md` v0.4, `docs/02-concept.md` v0.4, `docs/05-build-plan.md` v0.2, `README.md`; `project.yaml` trl_evidence gains SKG-DDR-003.
+| Item | Change | New result | Target |
+| --- | --- | --- | --- |
+| 5A, R2 | The stop collar is gone. The sleeve is 340 mm long (top 15 mm below the hub) with a 13 x 312 mm slot each side; a 12 mm cross pin, 70 mm long with an R-clip, passes through the slots and a 12.5 mm hole in the pole 140 mm above the tip. Strut lugs stay where they were, so the linkage is unchanged | Sleeve travel 300 mm (about 40 mm before); arms fold to 389 mm radius (about 604 mm as previously drawn), 11 mm inside a 0.8 m ring's bore; spike still 110 mm below the foot. Pin 6 MPa in double shear with the whole 25 m string on the foot (factor 43) | Rings of 0.8 to 1.3 m: **met by design** |
+| Knock-on, R9 | Scraper head 26.1 kg with arms on, 20.1 kg with them unpinned (25.2 and 19.2 before) | Heaviest piece still the capstan frame, 22.9 kg; kit about 457 kg | 25 kg or less: met on paper |
+| Knock-on, R11 | BOM line 15 rises USD 5 (USD 70 to 75) | USD 2,566 | Met on paper, within the target |
 
-**Requirement status, before and after.**
+No requirement is restated; SKG-REQ-001 v0.5 updates the status of R2, R9 and R11 only. The model gains a fold check: the sleeve slid 300 mm down the pole is held by the cross pin at its slot tops without touching the pole, and the folded toes are inside the smallest bore. All constructability checks pass (no overlaps, no parts adrift, fold check clear). The net mass is 0.9 kg (sleeve +1.1 kg, pin +0.06 kg, collar -0.3 kg), less than the 1.4 kg estimated when the option was posed.
 
-| ID | Before | After |
-| --- | --- | --- |
-| R4 | Not met on paper, 3.7 min | Not met on paper, 3.16 min with three on the hoist, 5 % over (3.8 min with two) |
-| R3 | At risk, lips about 437 N | At risk, lips about 687 N; fill still settled in the test-pit trial |
-| R1 | At risk, toes 15 mm past the ring | At risk, toes 40 mm past the ring; friction limit still 1.66 kPa |
-| R9 | Met on paper, scraper head 24.9 kg | **Not met on paper, 25.1 kg (0.1 kg over)** |
-| R5 | 52 N each with two | 54 N each with two, about 36 N with three |
-| R7 | Proof 187 kg, line factor 10.7, link margin 1.19 | Proof 193 kg, line factor 10.4, link margin 1.15 |
-| R2 | Folds to 364 mm | Folds to 377 mm with a 320 mm lift |
-| R11 | USD 2,506 | USD 2,561 |
+**Cost and mass.** Value-engineering target: USD 4,000. Estimated cost of the constructable design: USD 2,566 (USD 1,434 under the target). The change adds USD 5 (230 mm more 54 mm tube, two slots, a 12 mm bright bar pin and R-clip; the collar is dropped). `budget_usd` unchanged.
 
-The others are unchanged. The text of 01-sizing.md v0.1 quoted 24.6 kg for the scraper head and 2.96 m³ of soil where the script printed 24.9 kg and 3.28 m³; v0.2 quotes the script.
+**Files.** `cad/src/model.py` (longer slotted sleeve, new part `cross_pin`, stop collar removed, cross hole in the pole, fold check); STEP and STL regenerated; `bom/bom.csv` (line 15, with its price basis); `docs/04-calcs/sizing.py`, `01-sizing.md` (v0.3, new H7 and H8) and `results.csv`; `docs/03-requirements.md` (v0.5); `docs/02-concept.md` (v0.5); `docs/05-build-plan.md` (v0.3: making steps for the pole and sleeve, joint 10 and 14 captions, step 14, the scraper check); `README.md` (cost); `docs/decisions/0004-scraper-sleeve-travel.md`; `docs/06-design-decisions.md`.
 
-**Cost.** Estimated cost of the constructable design USD 2,506 before, USD 2,561 after (USD 10 handle, USD 35 tackle, USD 10 arms), USD 1,439 under the USD 4,000 value-engineering target. `budget_usd` unchanged (it is the value-engineering target, SKG-DDR-001 item 15). Grab 47.9 to 51.2 kg; kit about 452 to 456 kg.
+**Pictures.** SKG-DWG-002 to Rev P4; making sketches SKG-DWG-112 and 113 to Rev P2; joints 10 and 14; steps 14 and 15; the overview; concept media (hero, exploded, blueprint, flow, `model.glb`); `cad/src/product_model.py` and the exported render scenes in `/home/claude/renders/sinkgrab` (hero, exploded, detail). The photoreal renders on Amish's Mac predate the change and show the short sleeve and collar in the detail view; they need re-rendering there.
 
-**New questions for Amish.** Each is **Proposed, awaiting Amish**, listed in SKG-DEC-001 as items 4 to 6.
+### Open decisions
 
-**4. Scraper fold travel and the 25 kg piece limit (R2, R9).**
-- *State:* the stop collar on the scraper spike sits 30 mm below the sleeve's foot, so when the pole is lifted the collar picks up the sleeve after 30 mm, while the arms need 320 mm of lift on the sleeve to fold (300 mm before 3B). This was already the case before round 2 and was found while checking the longer arms. Separately, the longer arms bring the scraper head to 25.1 kg, 0.1 kg over R9.
-- *Option A:* remove the stop collar and let the struts carry the sleeve once the arms are folded, the folded geometry to be checked in the model. Fold works; head about 24.8 kg, R9 met; USD 0.
-- *Option B:* lengthen the spike by 320 mm and move the collar down with it. Fold works; head about 25.9 kg, R9 not met unless the arms travel unpinned; about USD 5.
-- *Option C:* no change. The arms cannot fold, so the scraper passes only bores wider than the open toes; R2 not met.
-- **Recommendation: A.** It fixes the fold and the 0.1 kg at no cost.
+None. No new question came out of this change.
 
-**5. R4 wording.**
-- *State:* R4 reads "3 min or less per grab cycle at 10 m depth with two operators"; with 1A the hoist uses three people, and the cycle is 3.16 min.
-- *Option A:* restate R4 as "3 min or less at 10 m with three people at the cranks for the hoist". Status unchanged: not met on paper, within 5 %.
-- *Option B:* keep the wording and report R4 against two people: 3.8 min.
-- **Recommendation: A.** It states what the crew will do and what the timed trial measures.
+### Cross-repo actions
 
-**6. Shear link margin.**
-- *State:* the 3:1 tackle added 3.3 kg to the grab against the 2.5 kg estimated, so the working pull is 1,042 N and the link's lowest release (1,202 N) is 1.15 times it, down from 1.19. A link that releases too near the working pull would drop full bites.
-- *Option A:* keep it and watch for releases in the test-pit bite trial. No change.
-- *Option B:* thin the ballast plates from 16 to 10 mm to win back about 2 kg: margin about 1.18; head weight for opening 14.0 to 12.0 kg.
-- **Recommendation: A.** The link still releases only above 1.15 times a working pull that already carries the 1.1 dynamic allowance; the bite trial shows whether it releases in use.
+None. No other repo quotes SinkGrab's scraper.
 
-**Safety notes.**
+### Safety concerns
 
-- The shear link and the crank shear pin are unchanged and still set the line limits (1.20 to 1.47 kN and 2.1 kN); the dead end, and so the link, now sits on the crosshead. If the link releases, the line runs out through both grab sheaves and the grab opens on the bottom, recovered on the recovery line as before.
-- Three people now crank during the hoist; the crank pin caps the line whatever the crew does, and the cranks still come off before lowering on the brake.
-- The proof load for R7 rises to 193 kg, still inside the HatchSide proof of 225 kg; safety stop 2 in the build plan says 193 kg.
-- The longer toes cut a wider ring under the cutting edge (3.56 m³ for 3 m of sinking): the tilt stops (correct from 1 in 160, stop at 1 in 80) are unchanged and matter more.
+- No change to the safety case. With the sleeve able to fold the arms, the scraper no longer jams under the ring as drawn; nobody enters the well to free anything.
+- If the cross pin is missing, the sleeve and foot drop off the pole when it is lifted. The pin and its R-clip are checked at every pole change.
 
-**Renders.** The photoreal renders made on Amish's Mac predate this session. The hero view changes only slightly (the long crank handle and the head sheave under the grab head); the exploded grab view changes visibly (a fourth sheave, the shear link on the crosshead) and the detail view shows the longer arms. A re-render of the exploded and detail views is needed; the hero can wait for the next render pass.
+### Recommended next step
 
-**Recommended next step.** Amish decides items 4 to 6. The design is then ready for TRL 4 when the phase allows: build the capstan, cradle and grab, proof-load them on CalRig, break-test the link and crank pins, then the test-pit bite trial and the timed cycle trial with three at the cranks.
+All decisions are made. The design is ready for TRL 4 when the phase allows, as recommended before: build and proof-load the capstan, cradle and grab on CalRig, break-test the link and crank pins, check the scraper's fold through a 0.8 m ring on the ground, then run the test-pit bite trial and the timed three-person cycle trial before a partner well.
+
+## Session 2026-10-03: Amish's requirement decisions carried out (round 2)
+
+Amish Chadha (owner), 2026-10-03: "i agree with all the 46 recommendations you provided. please proceed." For SinkGrab that decides items 27A, 28B and 29B (open decisions 1 to 3 of SKG-DEC-001), each as recommended. Recorded in `docs/decisions/0003-round-2-requirement-decisions.md` (SKG-DDR-003) and moved to Decisions made in `docs/06-design-decisions.md` (SKG-DEC-001 v0.2). Nothing was committed or pushed.
+
+### Changes made and new results
+
+| Item | Change | New result | Target |
+| --- | --- | --- | --- |
+| 27A, R4 | A 32 x 240 mm two-hand handle on the +X crank so a third person joins the hoist; R4 restated in SKG-REQ-001 v0.4 as "3 min or less per grab cycle at 10 m depth with three people at the cranks during the hoist and two otherwise" | 3.17 min (hoist 76 s); 3.8 min with two | 3 min: **not met on paper by about 0.2 min (6 %)**; the timed trial decides |
+| 28B, R3 | 3:1 closing tackle: an upper sheave (fourth bought sheave) on 6 mm cheeks under the head, turned across the hinge; the dead end and shear link moved to a 10 mm arm and lug on the crosshead, kept above 140 mm so the open shells clear it | Lips close with about 685 N, 1.06 of the line pull (457 N and 0.71 before, +50 %); bite 21.2 L at the assumed 75 % fill | At least 20 L: met on paper at the assumed fill; the test-pit trial confirms the fill |
+| 29B, R1 | A 100 x 35 x 10 mm wear-resistant blade under each toe, 25 mm beyond the toe plate, cutting 40 mm past a 1.0 m ring's outer face (15 mm before) | Sinking limit still 1.66 kPa of skin friction (estimate 1 to 3); the cut loosens the soil against the ring; T-bar force +4 % (142 N each) | At least 3 m: **at risk**; friction measured in the first trial |
+
+Knock-on results (SKG-CAL-001 v0.2): grab 51.0 kg (47.9 before; the tackle adds 3.1 kg, about 0.6 kg more than the 2.5 kg estimated when the option was posed), 96 kg full; working pull 1,041 N; shear link margin 1.15 (1.19 before); proof at twice the working load 193 kg, inside HatchSide's 225 kg; crank force 54 N each for two; line factor 10.4. Folded toe radius 389 mm, inside the 400 mm bore of a 0.8 m ring. The scraper head with its arms on is 25.2 kg, over R9's 25 kg, so it is carried with the arms unpinned (19.2 and 6.0 kg); the heaviest piece is then the capstan frame, 22.9 kg, and R9 stays met. Kit about 456 kg.
+
+**Cost and mass.** Value-engineering target: USD 4,000. Estimated cost of the constructable design: USD 2,561 (USD 1,439 under the target). The changes add USD 55: tackle USD 35 (sheave USD 30; cheeks, axle and dead-end arm USD 5), long handle USD 10, toe blades USD 10. `budget_usd` unchanged.
+
+**Files.** `cad/src/model.py` (new parts `upper_sheave`, `upper_axle`; cheeks in `head`; dead-end arm in `crosshead`; `toe_ext`; long handle; checks for the new parts: no overlaps, no parts adrift); STEP and STL regenerated; `bom/bom.csv` (lines 4, 10, 13, 14, 15, 25, each with a price basis); `docs/04-calcs/sizing.py`, `01-sizing.md` (v0.2) and `results.csv`; `docs/03-requirements.md` (v0.4); `docs/02-concept.md` (v0.4); `docs/05-build-plan.md` (v0.2); `README.md` (cost and one sentence).
+
+**Pictures.** SKG-DWG-001 and 002 to Rev P3; making sketches SKG-DWG-103 (cranks), 110 (head), 111 (crosshead and link), 113 (arms and blades); joint 9 (now the upper sheave and shear link) and joint 14 (blade past the ring); steps 9, 13 and 20; the overview; concept media (hero, exploded, blueprint, flow, `model.glb`); `cad/src/product_model.py` and the exported render scenes in `/home/claude/renders/sinkgrab` (hero, exploded, detail).
+
+### Decision for Amish
+
+**4. Scraper sleeve travel (R2), found while carrying out 29B.**
+- *State:* the scraper's arms fold to pass the ring bore only when the sliding sleeve moves 300 mm down the pole (folded radius 389 mm). As drawn, the stop collar sits 40 mm below the sleeve and the pole ends 120 mm below it, so the sleeve can slide only about 40 mm and the toes fold only to about 604 mm radius: the head could not be lifted out through any ring in the range. The first design had the same fault; the build plan's step 14 and joint 10 show it.
+- *Option A:* lengthen the sleeve to about 340 mm (top just below the hub) with a 300 mm slot each side, and put a 12 mm cross pin through the pole that runs in the slots and stops the sleeve at full fold; the stop collar goes and the spike stays 110 mm below the foot. About USD 5 and 1.4 kg; the head with its arms unpinned becomes about 20.6 kg.
+- *Option B:* lengthen the bottom pole and spike 320 mm and move the stop collar down. The spike end then stands about 430 mm below the foot when working and has to be pushed that far into the sump floor before the arms open. About USD 3 and 0.6 kg.
+- **Recommendation: A.** Nothing has to be forced into the sump floor, the 330 mm sump limit keeps its meaning, and the linkage, struts and fold radius stay as calculated.
+
+### Cross-repo actions
+
+None. No other repo quotes SinkGrab's tackle, proof load or scraper; the upper sheave is the same bought sheave as the other three.
+
+### Safety concerns
+
+- Three people stand at the capstan during the hoist. Safety stop 4 now says all three let go together on the stop call, the pawl holds the drum, and nobody stands between the capstan and the lead sheave. The crank shear pin matters more with a third person.
+- The shear link's margin over the working pull falls to 1.15; a link pin that releases low will open the grab more often, which is safe but slow. Break-testing the pins (To confirm, item 1) stays essential.
+- Until decision 4 is made, the scraper as drawn could jam under the ring; nobody enters the well to free it.
+
+### Recommended next step
+
+Amish decides item 4. The design is then ready for TRL 4 when the phase allows, as recommended before: build and proof-load the capstan, cradle and grab on CalRig, break-test the link and crank pins, then run the test-pit bite trial and the timed three-person cycle trial before a partner well.
 
 ## Session 2026-10-03: TRL 3 (kit 1.7.0, /to-trl3 under Amish's pre-approvals, batch 2)
 
@@ -175,3 +191,7 @@ Amish, 2026-10-03: "start with the first 14 repos from the list of 29 projects. 
 ## 2026-10-03: photoreal renders
 
 Rendered with Blender Cycles on Amish's Mac from `cad/src/product_model.py`; captioned with `.kit/photo_caption.py`; `media/card.png` and `media/social-preview.png` made with `.kit/cards.py`. Views: hero, exploded, detail. image_qc passes and `render.py --check` has no FAIL.
+
+## 2026-10-04: photoreal renders redone after the round-2 and round-3 decisions
+
+Views: hero, exploded, detail; cards regenerated; image_qc passes and `render.py --check` has no FAIL.

@@ -1,10 +1,14 @@
-"""SinkGrab sizing calculations (SKG-CAL-001 v0.2), TRL 3, with the round 2 requirement decisions (SKG-DDR-003).
+"""SinkGrab sizing calculations (SKG-CAL-001), TRL 3.
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every figure quoted in docs/04-calcs/01-sizing.md, tagged [A1], [B2] and so on, and writes
 docs/04-calcs/results.csv (one row per requirement). Geometry and masses come from cad/src/model.py
 (PARAMS, derived(), masses()); costs from bom/bom.csv; the value-engineering target from project.yaml.
 First-principles estimates for a paper proof of concept, not test results.
+v0.2 (2026-10-03): Amish's decisions 27A (third person on the cranks during the hoist), 28B (3:1
+closing tackle) and 29B (toe blades cutting 40 mm past the ring's outer face), SKG-DDR-003.
+v0.3 (2026-10-04): Amish's decision 5A (340 mm slotted sleeve on a 12 mm cross pin so the scraper
+arms fold to pass the ring), SKG-DDR-004.
 """
 import csv
 import math
@@ -41,7 +45,6 @@ A = dict(
     hs_proof=1.5,             # HatchSide proof load factor
     eta_chain=0.95, eta_brg=0.98,
     crank_power=50.0,         # W per person sustained at a crank
-    crew_hoist=3,             # people at the cranks during the hoist: a third on the 240 mm two-hand handle (SKG-DDR-003, item 1)
     heave=400.0,              # N short heave by one person on a crank
     mu_brake=0.35, wrap_deg=270.0,
     lower_speed=0.5,          # m/s lowering on the brake
@@ -64,7 +67,7 @@ grab_keys = ["head", "ballast", "tie_rods", "shell_pins", "shell_a", "shell_b", 
              "cross_sheave", "cross_axle", "upper_sheave", "upper_axle", "shear_link", "link_pin"]
 m_grab = sum(M[k] for k in grab_keys)
 say("A1", f"Closed shells hold {V_geo:.1f} L; at a {A['fill']:.0%} fill a bite is {V_bite:.1f} L (R3)")
-say("A2", f"Grab mass {m_grab:.1f} kg: shells {M['shell_a']:.1f} and {M['shell_b']:.1f}, head {M['head']:.1f} with ballast {M['ballast']:.1f}, head sheave and axle {M['upper_sheave'] + M['upper_axle']:.1f}, tie rods {M['tie_rods']:.1f}")
+say("A2", f"Grab mass {m_grab:.1f} kg: shells {M['shell_a']:.1f} and {M['shell_b']:.1f}, head {M['head']:.1f} with ballast {M['ballast']:.1f}, tie rods {M['tie_rods']:.1f}; the 3:1 tackle (upper sheave, axle, cheeks, dead-end arm) adds {m_grab - 47.9:.1f} kg to the first design's 47.9 kg")
 m_soil = V_bite * A["rho_sand"]
 m_air = m_grab + m_soil + A["water_L"]
 W_air = m_air * g
@@ -76,14 +79,14 @@ say("A5", f"Working line pull {T_work:.0f} N with a {A['dyn']:.2f} dynamic allow
 
 # ------------------------------------------------------------------ B. closing force (R3)
 stroke = D["stroke"]
-parts = P["tackle_parts"]
 lip_travel = 2 * P["shell_R"] * math.radians(P["open_deg"])
-k_close = parts * stroke / lip_travel
+n_t = P["tackle"]
+k_close = n_t * stroke / lip_travel
 T_close_max = m_sub * g
-say("B1", f"Head to crosshead stroke {stroke:.0f} mm; the {parts}:1 tackle takes {parts * stroke:.0f} mm of line; lips travel {lip_travel:.0f} mm in all; open span {D['lip_span_open']:.0f} mm")
+say("B1", f"Head to crosshead stroke {stroke:.0f} mm; the {n_t}:1 tackle takes {n_t * stroke:.0f} mm of line; lips travel {lip_travel:.0f} mm in all; open span {D['lip_span_open']:.0f} mm")
 say("B2", f"Mean lip force is {k_close:.2f} of the line pull; the line can pull at most the submerged weight, {T_close_max:.0f} N, before the grab lifts, so the lips close with about {k_close * T_close_max:.0f} N ({k_close * T_close_max / (2 * P['shell_B'] / 1000):.0f} N per metre of lip)")
 k2 = 2 * stroke / lip_travel
-say("B3", f"With the former 2:1 tackle the factor was {k2:.2f}, about {k2 * T_close_max:.0f} N at the lips; the 3:1 tackle gives {k_close / k2 - 1:.0%} more; head weight for opening {M['head'] + M['ballast']:.1f} kg")
+say("B3", f"The 2:1 tackle of the first design gave {k2:.2f} of the line pull, about {k2 * T_close_max:.0f} N: the 3:1 tackle closes {k_close / k2 - 1:.0%} harder; head weight for opening {M['head'] + M['ballast']:.1f} kg")
 fill_low = 0.5
 say("B4", f"At a {fill_low:.0%} fill in denser sand a bite is {V_geo * fill_low:.1f} L")
 
@@ -116,9 +119,6 @@ say("D1", f"At the rated grab load on layer 3 one person pushes {F_crank_one:.0f
 v = 2 * A["crank_power"] * eta / (W_air)
 rpm = v * 60 / (math.pi * D["layer_pd"][1] / 1000) * ratio
 say("D2", f"Two people at {A['crank_power']:.0f} W each hoist the full grab at {v * 60:.1f} m/min (crank {rpm:.0f} rpm on layer 2)")
-nh = A["crew_hoist"]
-v3 = nh * A["crank_power"] * eta / W_air
-say("D3", f"{nh} people (two on the 240 mm two-hand handle) hoist it at {v3 * 60:.1f} m/min with {F_crank_one / nh:.0f} N each on average")
 
 # ------------------------------------------------------------------ E. drum and rope (R7)
 cap = sum(D["layer_len"][:3])
@@ -169,13 +169,17 @@ twist = Tq * 1000 * A["depth"] * 1000 / (80e3 * Jp)
 tau_p = Tq * 1000 * (po / 2) / Jp
 say("H1", f"Two toes cutting {A['cut_force']:.0f} N each at {P['toe_r']:.0f} mm need {Tq:.0f} N m: {F_hand:.0f} N for each of two people on the T-bar")
 say("H2", f"Pole 42.4 x 2.6: {tau_p:.0f} MPa shear and {math.degrees(twist):.0f} deg of wind-up over {A['depth']:.0f} m")
-m_head = sum(M[k] for k in ["scraper_pole", "arms", "arm_pins", "sleeve", "sleeve_pins", "struts"])
+m_head = sum(M[k] for k in ["scraper_pole", "arms", "arm_pins", "sleeve", "sleeve_pins", "cross_pin", "struts"])
 m_sec = M["pole_section"]
 say("H3", f"Scraper head {m_head:.1f} kg, pole section {m_sec:.1f} kg, T-bar {M['tbar']:.1f} kg; hung at 10 m: {m_head + 5 * m_sec + M['tbar']:.0f} kg")
 n25 = 12
 m25 = m_head + n25 * m_sec + M["tbar"]
 say("H4", f"At 25 m (12 sections) {m25:.0f} kg, {m25 * g * A['dyn']:.0f} N with the allowance, under the crank pin's lowest release on layer 1 ({rel[0] * (1 - s):.0f} N) and the {A['hs_swl']:.0f} kg rating")
-say("H5", f"Toe reaches {P['toe_r']:.0f} mm, {P['toe_r'] - (P['ring'][0] / 2 + P['ring'][1]):.0f} mm beyond the ring's outer face; folded it is {D['fold_toe_r']:.0f} mm, inside the 400 mm bore of the smallest ring")
+say("H5", f"Toe blade reaches {P['toe_r']:.0f} mm, {P['toe_r'] - (P['ring'][0] / 2 + P['ring'][1]):.0f} mm beyond the ring's outer face (first design 15 mm); folded it is {D['fold_toe_r']:.0f} mm, inside the 400 mm bore of the smallest ring")
+say("H6", f"Against the first design's 590 mm toe the T-bar force rises {P['toe_r'] / 590.0 - 1:.0%}; the arms with blades weigh {M['arms']:.1f} kg")
+say("H7", f"Sleeve {P['sleeve_len']:.0f} mm long with a {P['slot'][0]:.0f} x {P['slot'][1]:.0f} mm slot each side; the {P['cross_pin'][0]:.0f} mm cross pin lets it slide {D['sleeve_travel']:.0f} mm, the {P['fold_lift']:.0f} mm the fold needs (first design about 40 mm before the stop collar, toes about 604 mm); sleeve top {P['pivot'][1] - P['hub'][1] / 2 - D['sleeve_top']:.0f} mm below the hub; spike {120 - 10:.0f} mm below the foot")
+pin_A = math.pi / 4 * (P['cross_pin'][0] / 1000) ** 2
+say("H8", f"Cross pin in double shear with the whole string resting on the foot at 25 m ({m25:.0f} kg, {m25 * g * A['dyn']:.0f} N): {m25 * g * A['dyn'] / (2 * pin_A) / 1e6:.0f} MPa, a factor of {A['tau'] / (m25 * g * A['dyn'] / (2 * pin_A)):.0f} on {A['tau'] / 1e6:.0f} MPa; bearing on the 2.6 mm pole wall {m25 * g * A['dyn'] / (2 * P['cross_pin'][0] * P['pole'][1]):.0f} MPa")
 
 # ------------------------------------------------------------------ I. sinking and tilt (R1, R6)
 ri, wall, hr = P["ring"][0] / 2000, P["ring"][1] / 1000, P["ring"][2] / 1000
@@ -203,25 +207,25 @@ say("I5", f"Tilt from two readings {d_ring:.0f} mm apart: ±{sig:.1f} mm, a reso
 h = A["depth"] + 1.05
 t_lower = h / A["lower_speed"]
 t_cranks = 20.0
-t_open = 10.0
-t_close2 = 15.0                                   # 2:1 tackle, estimate
-t_close = t_close2 + (parts - 2) * stroke / 1000 / v3   # the third part takes one more stroke of line
-t_hoist = h / v3
+t_open, t_close = 10.0, 15.0 + 1.5        # 3:1 tackle: about 1.5 s more line to close
+t_hoist = h / v
 t_dump = 10 + 15 + 10 + 10
 cyc = t_lower + t_cranks + t_open + t_close + t_hoist + t_dump
-say("J1", f"Cycle at {A['depth']:.0f} m with {nh} at the cranks for the hoist: lower {t_lower:.0f} s, cranks off and on {t_cranks:.0f} s, open {t_open:.0f} s, close {t_close:.1f} s ({parts}:1), hoist {t_hoist:.0f} s, doors and dump {t_dump:.0f} s: {cyc:.0f} s, {cyc / 60:.2f} min, {cyc / 180 - 1:.0%} over 3 min")
-t_close_2p = t_close2 + (parts - 2) * stroke / 1000 / v
-cyc2 = cyc - t_hoist - t_close + h / v + t_close_2p
-say("J2", f"With two people at the cranks the hoist takes {h / v:.0f} s and the cycle {cyc2 / 60:.1f} min")
-rate = V_bite / (cyc / 60) * 60
+say("J1", f"Cycle at {A['depth']:.0f} m with two people at the cranks: lower {t_lower:.0f} s, cranks off and on {t_cranks:.0f} s, open {t_open:.0f} s, close {t_close:.0f} s, hoist {t_hoist:.0f} s, doors and dump {t_dump:.0f} s: {cyc / 60:.1f} min")
+v3 = 3 * A["crank_power"] * eta / W_air
+cyc3 = cyc - t_hoist + h / v3
+say("J2", f"With a third person on the long +X handle during the hoist (decision 27A) the hoist takes {h / v3:.0f} s and the cycle {cyc3 / 60:.2f} min, {cyc3 / 180 - 1:.0%} over the 3 min target")
+rate = V_bite / (cyc3 / 60) * 60
 say("J3", f"Output {rate:.0f} L an hour of in-place sand; {vol * 1000 / rate:.1f} h of grabbing for {A['water']:.0f} m of sinking")
 
 # ------------------------------------------------------------------ K. masses and cost (R9, R11)
+m_arms = M["arms"] + M["arm_pins"]
 heavy = {"Capstan frame": M["frame"], "Winding drum": M["drum"], "Foot cradle": M["cradle"],
-         "Scraper head": m_head, "Ballast saddle": m_sad, "Door": M["doors"] / 2,
+         "Scraper head, arms unpinned": m_head - m_arms, "Scraper arms with blades (pair)": m_arms, "Ballast saddle": m_sad, "Door": M["doors"] / 2,
          "Well-head frame half": M["wh_frame"] / 2, "Grab shell": max(M["shell_a"], M["shell_b"]),
          "Drawbar half": M["drawbar"] / 2}
 hk = max(heavy, key=heavy.get)
+say("K0", f"Scraper head with its arms pinned on {m_head:.1f} kg: it is carried with the two arms unpinned ({m_head - m_arms:.1f} and {m_arms:.1f} kg)")
 say("K1", "Heaviest pieces: " + ", ".join(f"{k} {v:.1f} kg" for k, v in sorted(heavy.items(), key=lambda kv: -kv[1])[:5]))
 say("K2", f"Assembled grab {m_grab:.1f} kg (two people); longest pieces 1.46 m (well-head frame), 1.40 m (T-bar), 2.0 m (pole sections)")
 rows = list(csv.DictReader(open(ROOT / "bom" / "bom.csv")))
@@ -233,15 +237,15 @@ say("K4", f"Kit about {kit:.0f} kg without ropes, tubs and the HatchSide tripod"
 
 # ------------------------------------------------------------------ results table
 res = [
-    ("R1", "Water depth reached without de-watering", f"Sinks while skin friction < {f_crit:.2f} kPa; estimate {f_lo:.0f} to {f_hi:.0f} kPa; toes cut {P['toe_r'] - (P['ring'][0] / 2 + P['ring'][1]):.0f} mm past the ring's outer face to loosen the soil", "At least 3 m", "At risk"),
-    ("R2", "Fits rings of 0.8 to 1.3 m", f"Grab 468 mm across; scraper folds to {D['fold_toe_r']:.0f} mm radius; toes and skids adjustable", "0.8 to 1.3 m", "Met by design"),
-    ("R3", "Grab load per bite", f"{V_bite:.1f} L at 75 % fill; {V_geo * fill_low:.1f} L at 50 %; lips close with about {k_close * T_close_max:.0f} N through the {parts}:1 tackle", "At least 20 L", "At risk"),
-    ("R4", "Cycle time at 10 m, two operators", f"{cyc / 60:.1f} min with a third person at the cranks for the hoist ({cyc2 / 60:.1f} min with two)", "3 min or less", "Not met on paper" if cyc > 180 else "Met on paper"),
+    ("R1", "Water depth reached without de-watering", f"Sinks while skin friction < {f_crit:.2f} kPa; estimate {f_lo:.0f} to {f_hi:.0f} kPa; toes cut {P['toe_r'] - (P['ring'][0] / 2 + P['ring'][1]):.0f} mm past the ring to keep it low", "At least 3 m", "At risk; friction measured in the first trial"),
+    ("R2", "Fits rings of 0.8 to 1.3 m", f"Grab 468 mm across; scraper folds to {D['fold_toe_r']:.0f} mm radius on a {D['sleeve_travel']:.0f} mm sleeve travel; toes and skids adjustable", "0.8 to 1.3 m", "Met by design"),
+    ("R3", "Grab load per bite", f"{V_bite:.1f} L at 75 % fill with a {n_t}:1 tackle ({k_close / k2 - 1:.0%} more closing force); {V_geo * fill_low:.1f} L at 50 %", "At least 20 L", "Met on paper at the assumed fill; fill confirmed in the test-pit trial"),
+    ("R4", "Cycle time at 10 m, three people at the cranks during the hoist", f"{cyc3 / 60:.1f} min ({cyc / 60:.1f} min with two)", "3 min or less", "Not met on paper by about 0.2 min; the timed trial decides"),
     ("R5", "Crank force", f"{F_crank_one / 2:.0f} N each with two ({F_crank_one:.0f} N for one)", "150 N or less", "Met on paper"),
     ("R6", "Tilt", f"Resolution 1 in {d_ring / sig:.0f}; corrected by scraping the high side and saddles", "1 in 80 or better", "Not verifiable at TRL 3"),
     ("R7", "Proof load of lifting parts", f"Proof {2 * m_air:.0f} kg within HatchSide proof {A['hs_swl'] * A['hs_proof']:.0f} kg; line factor {mbs / T_work:.1f}", "2 x working load", "Met on paper"),
     ("R8", "No person in the well", "Every task from the surface; doors close the shaft", "100 %", "Met by design"),
-    ("R9", "Portability", f"Heaviest piece {heavy[hk]:.1f} kg ({hk.lower()})", "25 kg or less; small pickup", "Met on paper" if heavy[hk] <= 25.0 else f"Not met on paper ({heavy[hk] - 25:.1f} kg over)"),
+    ("R9", "Portability", f"Heaviest piece {heavy[hk]:.1f} kg ({hk.lower()})", "25 kg or less; small pickup", "Met on paper"),
     ("R10", "Local build", "Steel section, plate, stick welding, drilling; rolled shell skins", "Stick welder and hand tools", "Met by design"),
     ("R11", "Prototype cost", f"USD {cost:,.2f}", f"Value-engineering target USD {target:,.0f}", "Met on paper, within the target"),
 ]

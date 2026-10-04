@@ -1,5 +1,7 @@
 """SinkGrab product appearance model (build123d), TRL 3, constructable design (SKG-DDR-002).
 
+Updated 2026-10-03 for SKG-DDR-003 (3:1 tackle, long +X crank handle, toe blades) and 2026-10-04 for
+SKG-DDR-004 (340 mm slotted sleeve and 12 mm cross pin on the scraper); all from model.py.
 For photoreal renders only (.kit/export_views.py, then .kit/photoreal.py on Amish's Mac). Every
 part is the model.py solid itself; colours and materials are added for the look. Three scenes:
     hero      the kit at the well head (group "shell"), the HatchSide tripod, collar, spoil tub and a
@@ -28,14 +30,15 @@ TITLE = "SinkGrab: rope grab and under-curb scraper that deepen village wells un
 RENDER_VIEWS = [
     {"name": "hero", "groups": ["shell", "context"], "explode": False, "el": 20, "az": -35,
      "note": "Product render from the front right and above (about 20 deg elevation). Hand capstan with a person at "
-             "the crank, drawbar to the cradle under the tripod foot, well-head frame with closed doors, grab over "
+             "the crank and the long two-hand handle on the far crank, drawbar to the cradle under the tripod foot, well-head frame with closed doors, grab over "
              "the spoil tub; HatchSide tripod in grey"},
     {"name": "exploded", "groups": ["grab"], "explode": True, "el": 22, "az": -40,
      "note": "Exploded clamshell grab from the front right and above (about 22 deg elevation): head with ballast "
-             "plates and head sheave, tie rods, crosshead with sheave, hinge pin and shear link, two shells"},
+             "plates and upper sheave (3:1 tackle), tie rods, crosshead with sheave, dead-end arm and shear link, "
+             "hinge pin, two shells"},
     {"name": "detail", "groups": ["detail"], "explode": False, "el": 15, "az": -60,
-     "note": "Detail from the front right, slightly above (about 15 deg elevation): scraper arms open under the "
-             "cutting edge of a cut-away bottom ring; ballast saddle astride a cut-away top ring"},
+     "note": "Detail from the front right, slightly above (about 15 deg elevation): scraper arms open, toe blades "
+             "40 mm past the cutting edge of a cut-away bottom ring, the long slotted sleeve with its cross pin below the hub; ballast saddle astride a cut-away top ring"},
 ]
 
 LOOK = {  # key: (colour, material)
@@ -50,15 +53,15 @@ LOOK = {  # key: (colour, material)
     "crosshead": ("#15803D", "painted steel"), "hinge_pin": ("#9CA3AF", "bright steel"), "cross_sheave": ("#D4A017", "zinc plated steel"),
     "cross_axle": ("#9CA3AF", "steel"), "upper_sheave": ("#D4A017", "zinc plated steel"), "upper_axle": ("#9CA3AF", "steel"), "shear_link": ("#DC2626", "painted steel"), "link_pin": ("#B91C1C", "steel"),
     "scraper_pole": ("#0369A1", "painted steel"), "arms": ("#E11D48", "painted steel"), "arm_pins": ("#9CA3AF", "steel"),
-    "sleeve": ("#7C3AED", "painted steel"), "sleeve_pins": ("#9CA3AF", "steel"), "struts": ("#A16207", "painted steel"),
+    "sleeve": ("#7C3AED", "painted steel"), "sleeve_pins": ("#9CA3AF", "steel"), "cross_pin": ("#9CA3AF", "bright steel"), "struts": ("#A16207", "painted steel"),
     "pole_section": ("#0284C7", "painted steel"), "tbar": ("#1E40AF", "painted steel"), "wh_frame": ("#0F766E", "galvanised steel"),
     "doors": ("#9CA3AF", "galvanised steel"), "saddles": ("#57534E", "steel"), "hs_sheave": ("#D4A017", "zinc plated steel"),
     "rope": ("#E11D48", "polyester rope"),
 }
-EXPLODE = {"head": (0, 0, 520), "ballast": (0, 0, 640), "shear_link": (0, 0, 380), "link_pin": (0, 0, 380),
+EXPLODE = {"head": (0, 0, 520), "ballast": (0, 0, 640), "upper_sheave": (0, 0, 380), "upper_axle": (260, 0, 380),
+           "shear_link": (0, 160, 260), "link_pin": (0, 160, 260),
            "tie_rods": (0, 0, 260), "shell_pins": (0, 0, 180), "shell_a": (260, 0, -60), "shell_b": (-260, 0, -60),
-           "crosshead": (0, 0, 140), "cross_sheave": (0, 0, 200), "cross_axle": (0, 0, 200), "hinge_pin": (0, 420, 0),
-           "upper_sheave": (0, -220, 520), "upper_axle": (0, -300, 520)}
+           "crosshead": (0, 0, 140), "cross_sheave": (0, 0, 200), "cross_axle": (0, 0, 200), "hinge_pin": (0, 420, 0)}
 
 
 def product_parts(P=P):

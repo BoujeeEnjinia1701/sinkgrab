@@ -3,9 +3,9 @@ doc_id: SKG-BLD-001
 title: SinkGrab prototype build plan
 project: SinkGrab
 doc_type: Build plan
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-10-03'
+date: '2026-10-04'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -16,7 +16,11 @@ revisions:
 - version: "0.2"
   date: '2026-10-03'
   author: Amish Chadha
-  change: 'Round 2 decisions (SKG-DDR-003): 240 mm two-hand crank handle, 3:1 tackle with a head sheave and the dead end on the crosshead, arms 25 mm longer, fold lift 320 mm'
+  change: "Amish's decisions 27A, 28B and 29B of 2026-10-03 (SKG-DDR-003): long two-hand crank handle, 3:1 closing tackle with an upper sheave in the head and the shear link on the crosshead, toe blades 40 mm past the ring; scraper arms carried unpinned"
+- version: "0.3"
+  date: '2026-10-04'
+  author: Amish Chadha
+  change: "Amish's decision 5A of 2026-10-04 (SKG-DDR-004): 340 mm slotted sleeve and 12 mm cross pin in place of the stop collar, so the scraper's arms fold to pass the ring; sketches SKG-DWG-112 and 113, joints 10 and 14, step 14 and the overview redrawn"
 ---
 
 # SinkGrab prototype build plan
@@ -29,7 +33,7 @@ revisions:
 
 *Figure 1. Every component pulled apart and numbered in build order: made parts 1 to 23, bought parts 24 to 26. Ropes, pins and fasteners are not shown.*
 
-The prototype is a kit for deepening a flooded caisson well from the surface. It has five groups: a hand capstan on the ground with a drawbar to a cradle under the HatchSide tripod's leg A foot; a clamshell grab worked on one rope; an under-curb scraper on a pole in 2 m sections; a well-head frame with two folding doors; and eight ballast saddles. You weld the frames, drum, cradle, grab, scraper and saddles from stock steel tube, plate and bar; have the ratchet wheel, pawl and shell end plates profile-cut and the shell skins rolled; and buy the bearings, chain drive, sheaves, ropes, rigging, dip tape, gas detector and tubs. The parts cost about USD 2,561 from the bill of materials. The work needs a stick or MIG welder, a pillar drill, plate rolls (or a fabricator who has them) and hand tools. The HatchSide tripod is built to its own plan.
+The prototype is a kit for deepening a flooded caisson well from the surface. It has five groups: a hand capstan on the ground with a drawbar to a cradle under the HatchSide tripod's leg A foot; a clamshell grab worked on one rope; an under-curb scraper on a pole in 2 m sections; a well-head frame with two folding doors; and eight ballast saddles. You weld the frames, drum, cradle, grab, scraper and saddles from stock steel tube, plate and bar; have the ratchet wheel, pawl and shell end plates profile-cut and the shell skins rolled; and buy the bearings, chain drive, sheaves, ropes, rigging, dip tape, gas detector and tubs. The parts cost about USD 2,566 from the bill of materials. The work needs a stick or MIG welder, a pillar drill, plate rolls (or a fabricator who has them) and hand tools. The HatchSide tripod is built to its own plan.
 
 > **Safety:** SinkGrab is lifting equipment worked over an open well shaft, with a hand-cranked chain drive. A failed pin, rope or shackle can drop the grab; the chain, sprockets, drum, brake and cranks can trap fingers and clothing; the shaft can hold bad air; a person can fall in. The building work involves welding, grinding, rolling plate and lifting parts up to 25 kg. Nobody turns the cranks with the chain guard off, nobody enters the well, and nothing is lifted over the well before the safety stops in section 6 allow it. Load tests are TRL 4 work.
 
@@ -42,8 +46,8 @@ The concept showed what SinkGrab does; some of its parts could not be made or fi
 | Component | The concept had | The buildable design has | Why |
 | --- | --- | --- | --- |
 | Hoist | A capstan clamped on one tripod leg | A ground capstan 3 m from a lead sheave in a cradle under the leg A foot, joined by a drawbar (Figures 15, 13) | The leg cannot carry it; the rope pull stays inside the kit |
-| Grab lines | A closing line and a holding line | One line through a 3:1 tackle; the head's weight opens the shells (Figure 19) | One hoist, one rope |
-| Overload | None | A shear link at the tackle (Figure 21) and a shear pin in the crank hub (Figure 6) | The tripod is rated 150 kg |
+| Grab lines | A closing line and a holding line | One line through a 3:1 tackle (over a sheave in the crosshead and one in the head); the head's weight opens the shells (Figures 19, 21) | One hoist, one rope; the 3:1 tackle closes the shells 50 % harder |
+| Overload | None | A shear link at the tackle's dead end on the crosshead (Figure 21) and a shear pin in the crank hub (Figure 6) | The tripod is rated 150 kg |
 | Lowering | Not defined | Cranks off, lowering on a band brake held on by a weight (Figure 8) | The brake sets if the operator lets go |
 | Scraper | A scraper on a pole or a guided frame | Centred pole with a centralizer; two arms opened by struts when the pole's weight rests on the foot (Figures 24, 25) | Turns at depth; folds to pass the bore |
 | Spoil chute | A chute and tipping hook | Well-head frame with folding doors; the grab dumps into a tub on the closed doors (Figures 29, 30) | The shaft is covered whenever the grab is up |
@@ -112,14 +116,14 @@ Buy two UCP206 pillow block bearings with 30 mm bores. Nothing to make.
 
 *Figure 5. Crank shaft, hub and cranks making sketch (SKG-DWG-103).*
 
-**What it is and what it is made from.** The shaft the people turn, and the hub that drives the chain through the shear pin. 25 mm bright steel bar; 36 mm tube for the hub; the bought 12-tooth sprocket; 12 mm plate; 32 mm tube; M12 bolts; two ball-lock pins.
+**What it is and what it is made from.** The shaft the people turn, and the hub that drives the chain through the shear pin. 25 mm bright steel bar; 36 mm tube for the hub; the bought 12-tooth sprocket; 12 mm plate; 32 mm tube; M12 bolts; two ball-lock pins. One crank has a long handle so a third person can join the hoist.
 
 **How to make it.**
 
 1. Cut the shaft 633 mm long; mill or file a 20 mm square, 40 mm long, on each end for the cranks.
 2. Cut the hub 26 mm long from 36 mm tube bored to slide on the shaft; weld the 12-tooth sprocket to it.
 3. Slide the hub on the -X end, clamp, and drill a 3 mm hole through hub and shaft together, square to the shaft.
-4. Make two crank arms 250 mm between centres, each with a square socket to fit the shaft end and a hole for its ball-lock pin. Fit a 32 x 120 handle on an M12 bolt at the other end of the -X crank, and a 32 x 240 handle for two hands on the +X crank: three people crank during the hoist, two of them on the long handle.
+4. Make two crank arms 250 mm between centres, each with a square socket to fit the shaft end and a hole for its ball-lock pin. On the -X crank fit a 32 x 120 handle on an M12 bolt; on the +X crank fit a 32 x 240 handle on a longer M12 bolt, long enough for two people's hands side by side.
 
 **How it fits the parts next to it.**
 
@@ -248,18 +252,18 @@ The pawl is drawn on the brake's making sketch (Figure 9). Cut it from 8 mm plat
 
 *Figure 17. Grab head with ballast plates making sketch (SKG-DWG-110).*
 
-**What it is and what it is made from.** The heavy top block that holds the tie rods, guides the line and carries the upper sheave of the 3:1 tackle. 6 mm plate; 25 mm bright bar; 30 mm tube; 8 and 12 mm plate; 20 mm bar for the sheave axle; two 16 mm ballast plates; M10 bolts.
+**What it is and what it is made from.** The heavy top block that holds the tie rods, guides the line and carries the upper sheave of the tackle. 6 mm plate; 25 mm bright bar; 30 mm tube; 12 mm plate; two 16 mm ballast plates; M10 bolts; the bought upper sheave on a 20 mm axle.
 
 **How to make it.**
 
 1. Weld a box 300 x 120 x 40 from 6 mm plate.
 2. Pass the two 25 mm head pins (418 long) through the box ends, 240 mm apart, and weld; drill each end for an R-clip.
 3. Weld the rope guide tube (30 mm outside, 14 mm bore) through the box 65 mm from the centre; flare its bottom end.
-4. Cut two 8 mm head sheave cheeks with 20.5 mm axle holes and weld them under the box, 38 mm apart, so the axle hole is 85 mm below the box and the sheave's plane is turned 20 degrees about the vertical: its rising rope part then lines up with the crosshead sheave and its falling part hangs clear of the guide tube, to the dead end on the crosshead (SKG-DWG-110). Weld the recovery-line eye on top.
-5. Cut the 20 mm head sheave axle with R-clip holes.
+4. Weld two 6 mm cheek plates under the box, 65 mm the other side of the centre and 30 mm apart, hanging down to a 20.5 mm axle hole 85 mm below the box and 65 mm in from the box's long side. Weld the recovery-line eye on top.
+5. Fit the upper sheave between the cheeks on its 20 mm axle with R-clips. It stands across the box, turned 90 degrees to the crosshead sheave, so the line comes up into it on the centre line and goes down again 130 mm to one side.
 6. Drill both faces and the ballast plates for M10 bolts.
 
-**Check before moving on.** About 14.0 kg with both plates; the 8 mm line runs freely through the guide; a sheave turns freely between the cheeks on its axle.
+**Check before moving on.** About 13.5 kg with both plates and the cheeks, and 2.3 kg more with the sheave and axle; the 8 mm line runs freely through the guide and over the upper sheave.
 
 ### 3.13 Crosshead, tie rods and shear link
 
@@ -267,14 +271,15 @@ The pawl is drawn on the brake's making sketch (Figure 9). Cut it from 8 mm plat
 
 *Figure 18. Crosshead, tie rods and shear link making sketch (SKG-DWG-111).*
 
-**What it is and what it is made from.** The crosshead carries the hinge pin, the lower sheave of the 3:1 tackle and the tackle's dead end; the four tie rods join the head to the shells; the shear link is the weak point of the tackle. 10 and 12 mm plate; 30 mm bar; 30 x 10 mm flat; 6 mm plate; 16 mm pin; calibrated link pins of about 1.9 mm.
+**What it is and what it is made from.** The crosshead carries the hinge pin, the lower sheave of the tackle and the dead end of the line; the four tie rods join the head to the shells; the shear link is the weak point of the tackle. 10 mm plate; 30 mm bar; 30 x 10 mm flat; 6 mm plate; 16 mm pin; calibrated link pins of about 1.9 mm.
 
 **How to make it.**
 
-1. Cut the two crosshead plates with a 30.5 mm hinge hole and a 20.5 mm axle hole 120 mm above it. Extend the -Y plate up and out to the dead end, 180 mm above the hinge hole, and weld a 12 mm dead-end lug to its outer face with a 16.5 mm hole across, centred on the falling rope part (SKG-DWG-111).
-2. Cut the hinge pin 404 mm long from 30 mm bar; drill both ends for R-clips.
-3. Cut four tie rods 30 x 10 with 20.5 and 25.5 mm holes 420 mm apart.
-4. Cut the two link plates 87 x 30 from 6 mm plate with a 16.5 mm hole at the bottom and a 6.5 mm hole 62 mm above it; the link stands up from the crosshead lug and the link pin goes through a bush in the small hole so the pin can be swapped.
+1. Cut the two crosshead plates with a 30.5 mm hinge hole and a 20.5 mm axle hole 120 mm above it.
+2. On one plate weld the dead end: a 10 mm stub plate running out sideways from the plate, a 10 mm arm plate 45 mm deep along the hinge direction to 150 mm from the centre, and a 10 mm lug on its end with a 16.5 mm hole 197 mm above the hinge and 130 mm from the centre. Keep the arm above 140 mm so the open shells clear it.
+3. Cut the hinge pin 404 mm long from 30 mm bar; drill both ends for R-clips.
+4. Cut four tie rods 30 x 10 with 20.5 and 25.5 mm holes 420 mm apart.
+5. Cut the two link plates 87 x 30 from 6 mm plate with a 16.5 mm hole at the bottom and a 6.5 mm hole 62 mm above it; the link pin goes through a bush in the small hole so the pin can be swapped.
 
 **How it fits the parts next to it.**
 
@@ -286,9 +291,9 @@ The pawl is drawn on the brake's making sketch (Figure 9). Cut it from 8 mm plat
 
 *Figure 20. Joint 8. Each tie rod is pinned to its shell's lug with a 20 mm pin and R-clip; shell A's rods run outside A's end plates, shell B's outside B's.*
 
-![Figure 21. Joint 9: shear link at the tackle dead end](05-build-plan/joint-09.png)
+![Figure 21. Joint 9: upper sheave and shear link](05-build-plan/joint-09.png)
 
-*Figure 21. Joint 9. The shear link stands on the crosshead's dead-end lug; the line's thimble, coming down from the head sheave, hangs on the small calibrated pin. If the grab snags and the line pulls more than about 1.2 to 1.5 kN, the pin shears, the line runs out through the head and crosshead sheaves and the grab opens.*
+*Figure 21. Joint 9. The line comes up from the crosshead sheave, over the upper sheave in the head and down to the shear link on the crosshead's dead-end lug; its thimble hangs on the small calibrated pin. Three parts of line between head and crosshead close the shells 50 % harder than two. If the grab snags and the line pulls more than about 1.2 to 1.5 kN, the pin shears, the line runs out over both sheaves and the grab opens.*
 
 **Check before moving on.** The crosshead turns on the pin; the rods swing freely; a test link pin from the same coil has been broken at the right load (see the register).
 
@@ -302,7 +307,7 @@ The pawl is drawn on the brake's making sketch (Figure 9). Cut it from 8 mm plat
 
 **How to make it.**
 
-1. Cut the pole 1,420 mm; weld a 50 mm solid spike in the bottom end and a stop collar 60 mm above the tip.
+1. Cut the pole 1,420 mm and weld a 50 mm solid spike in the bottom end. Drill a 12.5 mm cross hole through the pole 140 mm above the tip, square to the arm lugs, for the sleeve's cross pin. There is no stop collar: the pin stops the sleeve.
 2. Weld the hub 80 mm above the toe line, with two pairs of 8 mm lugs either side, 16.5 mm holes 45 mm off the pole axis.
 3. Weld the centralizer collar 700 mm up with three arms 120 degrees apart; drill each arm for the skids at 340, 440 and 590 mm radius; bolt the skids at 440 for a 1.0 m ring.
 4. Drill a 13 mm cross hole 75 mm below the top end for the next section's bolt.
@@ -315,27 +320,29 @@ The pawl is drawn on the brake's making sketch (Figure 9). Cut it from 8 mm plat
 
 *Figure 23. Scraper arms, struts and sleeve making sketch (SKG-DWG-113).*
 
-**What it is and what it is made from.** Two arms whose toes cut under the ring, opened by the pole's weight. 50 x 10 mm flat; 10 mm wear-resistant plate for the toes; 30 x 6 mm flat for the struts; 54 mm tube and a 250 mm, 10 mm disc for the sleeve and foot; 12 and 16 mm pins.
+**What it is and what it is made from.** Two arms whose toes cut under the ring and 40 mm beyond its outer face, opened by the pole's weight, and the slotted sleeve that lets them fold to pass the ring. 50 x 10 mm flat; 10 mm wear-resistant plate for the toes and toe blades; 30 x 6 mm flat for the struts; 54 mm tube and a 250 mm, 10 mm disc for the sleeve and foot; 12 mm bright bar for the cross pin; 12 and 16 mm pins.
 
 **How to make it.**
 
-1. Cut two arms 564 mm from pivot hole to toe; weld a toe plate 100 x 80 x 10 square across each end. Open, the toes reach 615 mm radius, 40 mm past a 1.0 m ring's outer face (SKG-DDR-003).
-2. Drill each arm for its 16 mm pivot pin and, 310 mm along it, a 12.5 mm strut pin.
-3. Cut four struts 30 x 6 with 12.5 mm holes 409 mm apart.
-4. Weld the foot disc under the 110 mm sleeve, and a 10 mm strut lug each side with a 12.5 mm hole.
-5. For 1.2 to 1.3 m rings, make a second pair of arms 660 mm long.
+1. Cut two arms 540 mm from pivot hole to toe; weld a toe plate 100 x 80 x 10 square across each end.
+2. Cut two toe blades 100 x 35 from 10 mm wear-resistant plate. Weld one under the end of each arm at the cutting level, lapped 10 mm on the arm and toe plate and standing 25 mm out beyond the toe plate, so the blade's edge is 615 mm from the pole axis.
+3. Drill each arm for its 16 mm pivot pin and, 339 mm out, a 12.5 mm strut pin.
+4. Cut four struts 30 x 6 with 12.5 mm holes 398 mm apart.
+5. Cut the sleeve 340 mm long from 54 mm tube. Cut a slot 13 mm wide and 312 mm long through each side, starting 14 mm above the bottom end, with the top of each slot rounded; the two slots face each other. Weld the foot disc under the sleeve, and a 10 mm strut lug on each of the other two sides, 100 mm above the bottom, with a 12.5 mm hole.
+6. Cut the cross pin 70 mm long from 12 mm bright bar and drill a small hole near one end for an R-clip.
+7. For 1.2 to 1.3 m rings, make a second pair of arms 660 mm long, with the same blades.
 
 **How it fits the parts next to it.**
 
 ![Figure 24. Joint 10: arm, strut and sliding sleeve](05-build-plan/joint-10.png)
 
-*Figure 24. Joint 10. The sleeve slides on the pole above the stop collar. When the foot rests on the sump floor and the line is slacked, the pole slides down through the sleeve and the struts push the arms out.*
+*Figure 24. Joint 10. The sleeve slides on the pole, held by a cross pin through the pole that runs in a slot on each side of the sleeve. When the foot rests on the sump floor and the line is slacked, the pole slides down through the sleeve until the pin reaches the bottom of the slots, and the struts push the arms out.*
 
 ![Figure 25. Joint 14: toe under the cutting edge](05-build-plan/joint-14.png)
 
-*Figure 25. Joint 14, the ring cut away. Open, the toe reaches 40 mm past the ring's outer face, just below its cutting edge; the skid bears on the bore above. Lifting the pole 320 mm on the sleeve folds the toes to 377 mm radius so the head passes the ring. As drawn, the stop collar limits that lift to 30 mm; the fix is a question open with Amish (SKG-DEC-001, item 4).*
+*Figure 25. Joint 14, the ring cut away. Open, the toe blade reaches 40 mm past the ring's outer face, just below its cutting edge, so the ring slides down through loosened soil; the skid bears on the bore above. Lifting the pole lets the sleeve slide 300 mm down it until the pin reaches the top of the slots; that folds the blades to 389 mm radius so the head passes the ring.*
 
-**Check before moving on.** The arms open and fold freely by hand by sliding the sleeve.
+**Check before moving on.** The arms open and fold freely by hand by sliding the sleeve the full length of its slots; folded, the blades sit inside an 800 mm circle. The head weighs about 26.1 kg with the arms on, so unpin the two arms for carrying: about 20.1 kg for the head and 6.0 kg for the arms.
 
 ### 3.16 Pole sections and T-bar
 
@@ -406,7 +413,7 @@ Buy to specification, not brand. Line numbers are those of the bill of materials
 - **Bearings (lines 21 and 22).** Two UCP206 (30 mm) and two UCP205 (25 mm) pillow block ball bearings.
 - **Sprockets and chain (line 23).** ISO 08B-1: a 12-tooth sprocket bored to suit the hub and a 48-tooth plate wheel bored 30 mm; 1.6 m of chain, breaking load at least 17.8 kN, with one connecting link.
 - **Crank shear pins (line 24).** 3 mm S235 mild steel bar cut 40 mm long, with split pins; never hardened steel.
-- **Sheaves (line 25).** Four sheaves 150 mm outside, 130 mm at the rope, grooved for 8 mm fibre rope, 28 mm wide, 20 mm bore with a ball bearing, rated at least 500 kg: one for the cradle, one for the crosshead, one for the grab head (3:1 tackle), one to fit in the HatchSide head in place of its wire-rope sheave.
+- **Sheaves (line 25).** Four sheaves 150 mm outside, 130 mm at the rope, grooved for 8 mm fibre rope, 28 mm wide, 20 mm bore with a ball bearing, rated at least 500 kg: one for the cradle, one for the crosshead, one for the grab head (the 3:1 tackle), one to fit in the HatchSide head in place of its wire-rope sheave.
 - **Ropes (lines 26 to 28).** 45 m of 8 mm polyester double braid (at least 12 kN) with a thimble eye splice for the closing line; 40 m of 8 mm for the recovery line; eight 32 m lengths of 6 mm braid (at least 5 kN) for the saddles.
 - **Rigging (line 29).** A ball-bearing swivel and bow shackles, WLL 500 kg, and one WLL 1,000 kg shackle for the T-bar eye.
 - **Dip tape and plumb line (line 30), gas detector (line 31), spoil tubs (line 32), barrier kit and briefing card (line 33), fasteners and consumables (line 34).**
@@ -467,7 +474,7 @@ Wrap the band round the brake drum, pin the anchor end, then the link and lever;
 
 ![Step 9](05-build-plan/step-09.png)
 
-Slide each crank onto its square, 180 degrees apart, and push in the ball-lock pin.
+Slide each crank onto its square, 180 degrees apart, and push in the ball-lock pin. The crank with the long two-hand handle goes on the +X end, away from the chain guard; during the hoist two people work it and one the other crank.
 
 ### Step 10: crosshead and hinge pin into the shells
 
@@ -487,17 +494,17 @@ Pin two tie rods to each shell's lugs, outside that shell's end plates.
 
 Lift the head over the rods and pass the head pins through their upper holes; R-clips. The grab now opens when the head is pushed down and closes when the crosshead is lifted toward it.
 
-### Step 13: ballast plates, head sheave and shear link
+### Step 13: ballast plates, upper sheave and shear link
 
 ![Step 13](05-build-plan/step-13.png)
 
-Bolt both ballast plates on with M10 bolts. Put the head sheave between the head's cheeks on its 20 mm axle; R-clips. Pin the shear link to the crosshead's dead-end lug and fit a calibrated link pin above. The assembled grab weighs about 51 kg; two people lift it.
+Bolt both ballast plates on with M10 bolts. Fit the upper sheave between the head's cheeks on its axle; R-clips. Pin the shear link to the crosshead's dead-end lug and fit a calibrated link pin. The assembled grab weighs about 51 kg; two people lift it.
 
 ### Step 14: arms, struts and sleeve onto the pole
 
 ![Step 14](05-build-plan/step-14.png)
 
-Slide the sleeve onto the pole from below, above the stop collar. Pin the arms to the hub lugs and the struts between the arms and the sleeve lugs.
+Slide the sleeve onto the pole from the spike end, slots facing the cross hole. Push the cross pin through one slot, the pole and the other slot, and fit its R-clip. Pin the arms to the hub lugs and the struts between the arms and the sleeve lugs.
 
 ### Step 15: pole section and T-bar
 
@@ -533,7 +540,7 @@ Carry the capstan frame and the drum separately and reassemble them (steps 2, 4 
 
 ![Step 20](05-build-plan/step-20.png)
 
-Fit the 8 mm head sheave in the HatchSide head. Clamp the line on the drum, wind on three dead turns, lead it under the lead sheave, up beside leg A, over the head sheave and down the well axis. Thread it down through the grab head's guide, under the crosshead sheave, up over the head sheave and down to the shear link on the crosshead; shackle the thimble on the link pin. That is the 3:1 tackle. Tie the recovery line to the head's eye and make it off at the frame.
+Fit the 8 mm head sheave in the HatchSide head. Clamp the line on the drum, wind on three dead turns, lead it under the lead sheave, up beside leg A, over the head sheave and down the well axis. Thread it down through the grab head's guide, under the crosshead sheave, up over the upper sheave in the head and down to the shear link on the crosshead; shackle the thimble on the link pin. Tie the recovery line to the head's eye and make it off at the frame.
 
 ## 5. First checks
 
@@ -550,9 +557,9 @@ These are listed here and recorded in a TRL 4 test report, not in this plan.
 | Brake | R7 | Lower the full grab on the brake, let go of the lever | The drum stops within one turn |
 | Crank force | R5 | Spring balance on a handle, full grab | 150 N or less per person |
 | Bite | R3 | Test pit of saturated sand, 20 bites into a measured tub | Record the mean bite |
-| Cycle time | R4 | 20 cycles at 10 m, two and then three people at the cranks | Record both |
+| Cycle time | R4 | 20 cycles at 10 m, three people at the cranks during the hoist (two otherwise); then 20 with two | 3 min or less a cycle with three at the hoist; record both |
 | Sinking and tilt | R1, R6 | Partner well; dip tape every cycle | Record depth gained and tilt |
-| Mass and packing | R9 | Weigh each piece; load the kit | Each 25 kg or less; record the vehicle used |
+| Mass and packing | R9 | Weigh each piece, the scraper head with its arms unpinned; load the kit | Each 25 kg or less; record the vehicle used |
 
 ## 6. Safety stops
 
@@ -561,7 +568,7 @@ Work stops at each of these points until what is listed is true.
 1. **Before anything is lifted over the well.** The barrier stands 2 m outside the tripod feet. The shaft air has been tested with the gas detector. The chain guard is on and the brake weight is fitted. Everyone has been briefed with the card: one signaller, whistle and hand signals; one blast stops all work.
 2. **Before the first lift on a site.** The line, cradle, drawbar, capstan and tripod have been proof-loaded for 1 min at 193 kg with nobody near the well. The rope, splice, shackles and pins have been inspected that day. The link pin is a calibrated pin from the tested coil; the crank pin is a 3 mm mild steel pin.
 3. **Before each lift.** Nobody is under the grab, beside the line or on the doors. The doors are open only while the grab passes.
-4. **Before lowering.** The cranks are off and the pawl is up; the person on the brake has both hands on the lever.
+4. **Before lowering.** The cranks are off and the pawl is up; the person on the brake has both hands on the lever. During the hoist three people work the cranks; on the stop call all three let go together, the pawl holds the drum, and nobody stands between the capstan and the lead sheave.
 5. **Before dumping.** The doors are closed under the grab and the tub is in place; nobody reaches under the grab.
 6. **After a shear link or crank pin breaks.** Stop, slack the line, find the snag, and recover the grab on the recovery line if it is on the bottom. Fit a new pin of the specified kind only.
 7. **When tilt passes 1 in 160.** Scrape only the high side and move saddles to it. At 1 in 80, stop all undercutting until it is back under 1 in 160.
@@ -583,5 +590,5 @@ Work stops at each of these points until what is listed is true.
 - `cad/drawings/SKG-DWG-001` and `SKG-DWG-002`: the well-head layout and the grab and scraper general arrangement; `SKG-DWG-101` to `SKG-DWG-117`: making sketches.
 - `docs/04-calcs/01-sizing.md` and `docs/04-calcs/sizing.py` (SKG-CAL-001): loads, limits, forces, masses and cost.
 - `bom/bom.csv`: parts, specifications and prices.
-- `docs/decisions/0002-design-for-construction.md` (SKG-DDR-002): the changes in section 2.
+- `docs/decisions/0002-design-for-construction.md` (SKG-DDR-002): the changes in section 2; `docs/decisions/0003-round-2-requirement-decisions.md` (SKG-DDR-003): the third person at the cranks, the 3:1 tackle and the toe blades.
 - `cad/src/build_plan_media.py`: every picture in this plan.

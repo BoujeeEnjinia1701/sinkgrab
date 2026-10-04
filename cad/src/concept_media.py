@@ -1,4 +1,4 @@
-"""SinkGrab concept media (TRL 3, constructable design SKG-DDR-002 with SKG-DDR-003), generated from the parametric model.
+"""SinkGrab concept media (TRL 3, constructable design SKG-DDR-002), generated from the parametric model.
 
 Run from the repo root:  python cad/src/concept_media.py
 Takes every component from cad/src/model.py at the well head and renders the media set with
@@ -33,9 +33,9 @@ STYLE = {  # key: (colour, exploded offset in mm)
     "head": ("#2563EB", (0, 0, 650)), "ballast": ("#1E3A8A", (0, 0, 850)), "tie_rods": ("#475569", (0, 0, 420)),
     "shell_pins": ("#111827", (0, 0, 300)), "shell_a": ("#EA580C", (0, 250, 0)), "shell_b": ("#F59E0B", (0, -250, 0)),
     "crosshead": ("#15803D", (0, 0, 220)), "hinge_pin": ("#111827", (0, 0, 120)), "cross_sheave": ("#D4A017", (0, 0, 300)),
-    "cross_axle": ("#374151", (0, 0, 360)), "upper_sheave": ("#D4A017", (0, 0, 760)), "upper_axle": ("#374151", (0, 0, 800)), "shear_link": ("#DC2626", (0, 0, 520)), "link_pin": ("#DC2626", (0, 0, 560)),
+    "cross_axle": ("#374151", (0, 0, 360)), "upper_sheave": ("#D4A017", (0, 0, 760)), "upper_axle": ("#374151", (0, 0, 760)), "shear_link": ("#DC2626", (0, 0, 300)), "link_pin": ("#DC2626", (0, 0, 340)),
     "scraper_pole": ("#0369A1", (0, 0, 0)), "arms": ("#E11D48", (0, 0, 300)), "arm_pins": ("#111827", (0, 0, 400)),
-    "sleeve": ("#7C3AED", (0, 0, -300)), "sleeve_pins": ("#111827", (0, 0, -400)), "struts": ("#A16207", (0, 0, -150)),
+    "sleeve": ("#7C3AED", (0, 0, -300)), "sleeve_pins": ("#111827", (0, 0, -400)), "cross_pin": ("#111827", (0, -200, -300)), "struts": ("#A16207", (0, 0, -150)),
     "pole_section": ("#0284C7", (0, 300, 0)), "tbar": ("#1E40AF", (0, 600, 0)),
     "wh_frame": ("#0F766E", (0, 0, 0)), "doors": ("#9CA3AF", (0, 0, 500)), "saddles": ("#57534E", (0, 0, 0)),
     "hs_sheave": ("#D4A017", (0, 0, 0)), "rope": ("#E11D48", (0, 0, 0)),
@@ -60,18 +60,18 @@ context = [Part("HatchSide tripod (shared block, not in this kit)", tripod_conte
            Part("Spoil tub (bought, line 32)", barrow_context(P), "#A8A29E"), person]
 
 flow = {"title": "energy and material per bite at 10 m (SKG-CAL-001 estimates)", "unit": "kJ",
-        "stages": [("Three people at the cranks", 11.5), ("Drum and line", 10.5), ("Full grab lifted 11 m", 10.5),
+        "stages": [("Three people at the cranks", 11.4), ("Drum and line", 10.4), ("Full grab lifted 11 m", 10.4),
                    ("Sand into the tub", "21 L, 42 kg")],
-        "losses": [(0, "Chain and bearings", 1.0), (1, "Lifting the grab itself", 5.6), (2, "Water in the shells", 0.3)]}
+        "losses": [(0, "Chain and bearings", 1.0), (1, "Lifting the grab itself", 5.5), (2, "Water in the shells", 0.3)]}
 
 outs = render_all(
     parts, project="SinkGrab", title="Rope grab and under-curb scraper well-deepening kit", dwg_no="SKG-DWG-010",
-    key_figures=["Bite 21 L (28 L closed shells); grab 51 kg, 97 kg full",
+    key_figures=["Bite 21 L (28 L closed shells); grab 51 kg, 96 kg full",
                  "One 8 mm line, 3:1 tackle; head weight opens the shells",
-                 "Capstan 4:1; three people hoist (two-hand handle): 36 N each",
+                 "Capstan 4:1, 250 mm cranks: 54 N each for two; third on the hoist",
                  "Line limited to 1.2 to 1.5 kN by a shear link (tripod 150 kg)",
-                 "Scraper toes 40 mm past the ring; arms fold to 377 mm radius",
-                 "Cycle 3.2 min at 10 m (target 3 min); parts USD 2,561"],
+                 "Toe blades 40 mm past the ring; slotted sleeve folds arms to 389 mm",
+                 "Cycle 3.2 min at 10 m (target 3 min); parts USD 2,566"],
     scale_figure=False, context=context, cut=False, web_model=False, flow=flow)
 
 # Web model at a coarse tessellation (a few MB), with the kit's viewer page

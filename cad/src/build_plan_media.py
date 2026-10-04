@@ -10,6 +10,7 @@ pictures and the model never disagree:
 Uses .kit/build_views.py. BUILD PLAN ILLUSTRATION, PLAN NOT YET BUILT.
 """
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -33,6 +34,10 @@ SCR = scraper_parts(P)
 WH = wellhead_parts(P)
 SAD = saddle_part(P)
 GREY = "#D1D5DB"
+# making sketches revised after their first issue (P1 is the first issue, 2026-10-03)
+_P1 = ("P1", "Making sketch for the prototype build plan", DATE, "AC")
+REV = {"SKG-DWG-112": [_P1, ("P2", "SKG-DDR-004: stop collar replaced by a cross hole for the sleeve pin", "2026-10-04", "AC")],
+       "SKG-DWG-113": [_P1, ("P2", "SKG-DDR-004: 340 mm slotted sleeve and 12 mm cross pin", "2026-10-04", "AC")]}
 
 COL = {"frame": "#0F766E", "drum": "#C2410C", "drum_bearings": "#374151", "crank_bearings": "#4B5563",
        "crank_shaft": "#6B7280", "small_sprocket": "#B45309", "shear_pin": "#DC2626", "chain": "#78716C",
@@ -40,10 +45,10 @@ COL = {"frame": "#0F766E", "drum": "#C2410C", "drum_bearings": "#374151", "crank
        "cradle": "#0E7490", "lead_sheave": "#D4A017", "lead_axle": "#374151", "drawbar": "#64748B", "draw_pins": "#111827",
        "head": "#2563EB", "ballast": "#1E3A8A", "tie_rods": "#475569", "shell_pins": "#111827", "shell_a": "#EA580C",
        "shell_b": "#F59E0B", "crosshead": "#15803D", "hinge_pin": "#111827", "cross_sheave": "#D4A017",
-       "cross_axle": "#374151", "shear_link": "#DC2626", "link_pin": "#B91C1C", "scraper_pole": "#0369A1",
-       "arms": "#E11D48", "arm_pins": "#111827", "sleeve": "#7C3AED", "sleeve_pins": "#111827", "struts": "#A16207",
+       "cross_axle": "#374151", "upper_sheave": "#D4A017", "upper_axle": "#374151", "shear_link": "#DC2626", "link_pin": "#B91C1C", "scraper_pole": "#0369A1",
+       "arms": "#E11D48", "arm_pins": "#111827", "sleeve": "#7C3AED", "sleeve_pins": "#111827", "cross_pin": "#111827", "struts": "#A16207",
        "pole_section": "#0284C7", "tbar": "#1E40AF", "wh_frame": "#0F766E", "doors": "#9CA3AF", "saddle": "#57534E",
-       "rope": "#E11D48", "hs_sheave": "#D4A017", "upper_sheave": "#D4A017", "upper_axle": "#374151"}
+       "rope": "#E11D48", "hs_sheave": "#D4A017"}
 
 ALL = {**CAP, **LEAD, **GRAB, **SCR, **WH}
 
@@ -84,7 +89,7 @@ def overview():
         ("Shear link", moved(GRAB["shear_link"], gx, 0, 300), "shear_link", (300, 0, 300)),
         ("Scraper head (pole, hub, centralizer)", moved(SCR["scraper_pole"], sx, 0, 450), "scraper_pole", (0, 0, 0)),
         ("Scraper arms and struts", moved(SCR["arms"] + SCR["struts"], sx, 0, 450), "arms", (0, 0, 250)),
-        ("Sliding sleeve and foot", moved(SCR["sleeve"], sx, 0, 450), "sleeve", (0, 0, -150)),
+        ("Slotted sleeve, foot and cross pin", moved(SCR["sleeve"] + SCR["cross_pin"], sx, 0, 450), "sleeve", (0, 0, -150)),
         ("Pole section, 2 m", Pos(sx + 700, -1300, 60) * Rot(90, 0, 0) * Pos(0, 0, -P["head_len"]) * SCR["pole_section"], "pole_section", (0, 0, 0)),
         ("T-bar", Pos(sx + 400, 1200, -3500 + 2000) * SCR["tbar"], "tbar", (0, 0, 0)),
         ("Well-head frame", Pos(0, -2700, -300) * WH["wh_frame"], "wh_frame", (0, 0, 0)),
@@ -92,7 +97,7 @@ def overview():
         ("Ballast saddle (1 of 8)", Pos(1900, -1700, 300) * SAD, "saddle", (0, 0, 0)),
         ("Bearings (4), bought", moved(CAP["drum_bearings"] + CAP["crank_bearings"], 0, cy, 0), "drum_bearings", (0, 0, 350)),
         ("Chain and sprockets, bought", moved(CAP["chain"], 0, cy, 0), "chain", (-350, 0, 450)),
-        ("Sheaves (4), bought", moved(LEAD["lead_sheave"], 0, ly, 0) + moved(GRAB["cross_sheave"] + GRAB["upper_sheave"], gx, 0, 300), "lead_sheave", (0, 0, 300)),
+        ("Sheaves (4), bought", moved(LEAD["lead_sheave"], 0, ly, 0) + moved(GRAB["cross_sheave"], gx, 0, 300) + moved(GRAB["upper_sheave"], gx, 0, 300), "lead_sheave", (0, 0, 300)),
     ]
     parts = [part(n, s, k, e) for n, s, k, e in items]
     bv.overview(parts, OUT / "overview.png", "SinkGrab prototype: every component in build order",
@@ -110,7 +115,7 @@ def sheets():
     wh_all = [Part(k, v, GREY) for k, v in WH.items()]
     OWN = {"SKG-DWG-103": {"crank_shaft", "small_sprocket", "cranks"}, "SKG-DWG-105": {"pawl", "brake"},
            "SKG-DWG-110": {"head", "ballast"}, "SKG-DWG-111": {"crosshead", "tie_rods", "shear_link", "hinge_pin"},
-           "SKG-DWG-113": {"arms", "struts", "sleeve"}, "SKG-DWG-114": {"pole_section", "tbar"},
+           "SKG-DWG-113": {"arms", "struts", "sleeve", "cross_pin"}, "SKG-DWG-114": {"pole_section", "tbar"},
            "SKG-DWG-116": {"doors"}, "SKG-DWG-109": {"shell_a"}}
     rw = P["ring"][1]
     ring_piece = bx(-rw / 2, rw / 2, -260, 260, -500, 0)
@@ -138,13 +143,13 @@ def sheets():
           "Check: flanges run true within 1.5 mm; brake drum within 0.5 mm"]),
         ("SKG-DWG-103", "Crank shaft, sprocket hub and cranks: making sketch",
          CAP["crank_shaft"] + CAP["small_sprocket"] + CAP["cranks"], "crank_shaft", cap_all,
-         "25 mm S355 shaft; 36 mm tube hub; 12 mm plate arms; 32 mm handle tube",
+         "25 mm S355 shaft; 36 mm tube hub; 12 mm plate arms; 32 mm handle tubes",
          ["Shaft 25 x 633; square ends 20 across flats, 40 long, for the cranks",
           "Hub 26 long, bored to slide on the shaft; 12-tooth sprocket welded to it",
           "Drill hub and shaft together for the 3 mm shear pin, 12 from the sprocket face",
           "Crank arms 250 between centres with a square socket and a ball-lock pin",
-          "Handles 32 dia on M12 bolts: 120 long on -X, 240 long for two hands on +X",
-          "Arms 180 deg apart; three people crank for the hoist (two on the long handle)",
+          "Handles turn on M12 bolts: -X 32 x 120; +X 32 x 240 for two hands",
+          "Arms 180 deg apart; the long handle lets a third person join the hoist",
           "Check: hub turns freely with the pin out, locks with it in"]),
         ("SKG-DWG-104", "Chain guard: making sketch", CAP["guard"], "guard", cap_all,
          "1.5 mm steel sheet",
@@ -197,42 +202,47 @@ def sheets():
           "Check: both shells meet along the lips within 2 mm when pinned"]),
         ("SKG-DWG-110", "Grab head with ballast plates: making sketch",
          GRAB["head"] + GRAB["ballast"], "head", grab_all,
-         "6 mm plate box; 25 mm S355 bar; 30 mm tube; 12 and 16 mm plate",
+         "6 mm plate box; 25 mm S355 bar; 30 mm tube; 6, 12 and 16 mm plate; 20 mm axle",
          ["Box 300 x 120 x 40 from 6 mm plate, welded all round",
           "Two head pins 25 dia through the box ends at +/- 120, 418 long",
           "Rope guide tube 30 OD, 14 bore, 65 from the centre on the -X side",
-          "Head sheave cheeks: two 8 mm plates under the box, skewed 20 deg about the axis",
-          "Cheek axle holes 20.5, 85 below the box; 20 mm axle with R-clips (3:1 tackle)",
+          "Two 6 mm sheave cheeks under the box at +65, 30 apart (3:1 tackle)",
+          "Axle hole 20.5, 85 below the box, 65 in from its long side",
+          "Upper sheave turns across the box; line in at the centre, out 130 aside",
           "Recovery-line eye on top, 20 mm hole",
           "Ballast plates 190 x 110 x 16 bolted to both faces (M10)",
-          "Check: 14.0 kg with the plates; head sheave turns freely between the cheeks"]),
+          "Check: 13.5 kg with the plates and cheeks"]),
         ("SKG-DWG-111", "Crosshead, tie rods and shear link: making sketch",
          GRAB["crosshead"] + GRAB["tie_rods"] + GRAB["shear_link"] + GRAB["hinge_pin"], "crosshead", grab_all,
-         "10 mm plate; 30 x 10 flat; 6 mm plate; 30 mm bar",
+         "10 mm plate; 30 x 10 flat; 6 mm plate; 30 mm bar; 16 mm pin",
          ["Crosshead plates 10 mm, 50 apart: hinge hole 30.5, axle hole 20.5 120 above",
-          "-Y plate extended to a 12 mm dead-end lug, 16.5 hole 180 above the hinge",
           "Hinge pin 30 x 404, R-clips both ends; sheave on a 20 mm axle",
           "Tie rods 30 x 10, 420 between 20.5 and 25.5 holes; two per shell",
-          "Shear link: two 6 mm plates 87 x 30, 16 mm pin through the lug at the bottom",
+          "Dead end on one plate: stub, arm 45 deep and lug, hole 197 up, 130 aside",
+          "Arm kept above 140 so the open shells clear it",
+          "Shear link: two 6 mm plates 87 x 30, 16 mm pin at the bottom",
           "Calibrated link pin about 1.9 mm, 62 above the lug pin",
           "Check: crosshead turns on the pin; rods swing freely"]),
         ("SKG-DWG-112", "Scraper head (pole, hub and centralizer): making sketch",
          SCR["scraper_pole"], "scraper_pole", scr_all,
          "42.4 x 2.6 tube; 70 mm tube hub; 8 mm plate lugs; 40 x 8 flat; 10 mm skids",
-         ["Bottom pole 42.4 x 2.6, 1,420 long, solid 50 mm spike end and stop collar",
+         ["Bottom pole 42.4 x 2.6, 1,420 long, solid 50 mm spike end; no stop collar",
+          "12.5 cross hole 140 above the tip, square to the arm lugs, for the sleeve pin",
           "Hub 70 OD x 90 at 80 above the toe line; two pairs of lugs, 16.5 holes at 45",
           "Centralizer collar at 700 up; three arms 120 deg apart; skids at 440 radius",
           "Skid arms drilled for 340, 440 and 590 radius (0.8, 1.0 and 1.3 m rings)",
           "Top end takes the next section's spigot, 13 mm cross hole",
           "Check: pole straight within 3 mm; skids on a 880 circle"]),
         ("SKG-DWG-113", "Scraper arms, struts and sleeve: making sketch",
-         SCR["arms"] + SCR["struts"] + SCR["sleeve"], "arms", scr_all,
-         "50 x 10 flat; 10 mm wear plate; 30 x 6 flat; 54 mm tube; 10 mm plate",
-         [f"Arms 50 x 10, {D['arm_len']:.0f} from pivot to toe; toe plate 100 x 80 x 10",
-          f"Toes reach {P['toe_r']:.0f} radius open: {P['toe_r'] - P['ring'][0] / 2 - P['ring'][1]:.0f} beyond a 1.0 m ring's outer face",
-          f"Struts 30 x 6 in pairs, {D['strut_len']:.0f} between 12.5 holes",
-          "Sleeve 54 x 110 slides on the pole; foot plate 250 dia below it",
-          f"Lifting the pole {P['fold_lift']:.0f} on the sleeve folds the toes to {D['fold_toe_r']:.0f} radius",
+         SCR["arms"] + SCR["struts"] + SCR["sleeve"] + SCR["cross_pin"], "arms", scr_all,
+         "50 x 10 flat; 10 mm wear plate; 30 x 6 flat; 54 mm tube; 10 mm plate; 12 mm bar",
+         ["Arms 50 x 10, 540 from pivot to toe; toe plate 100 x 80 x 10",
+          "Toe blade 100 x 35 x 10 at the cutting level, 25 beyond the toe plate",
+          "Blades reach 615 radius open: 40 beyond a 1.0 m ring's outer face",
+          "Struts 30 x 6 in pairs, 398 between 12.5 holes",
+          "Sleeve 54 x 340; slot 13 x 312 each side, 14 up; foot plate 250 dia",
+          "Strut lugs 100 up; cross pin 12 x 70 through slots and pole, R-clip",
+          "Sleeve slides 300 on the pin: blades fold to 389 radius",
           "Longer arm pair (660) for 1.2 to 1.3 m rings",
           "Check: arms open and fold freely by hand"]),
         ("SKG-DWG-114", "Pole section and T-bar: making sketch",
@@ -267,13 +277,21 @@ def sheets():
           "20.6 kg; make eight",
           "Check: drops over a 75 mm board without binding"]),
     ]
+    only = set(os.environ.get("SKG_SHEETS", "").split()) or None
     for dwg, title, shape, key, nb, mat, notes in S:
+        if only and dwg not in only:
+            continue
         own = OWN.get(dwg, {key})
         if dwg == "SKG-DWG-116":
             nb = [n for n in nb if n.name != "doors"] + [Part("other door", WH["doors"] & bx(-2000, 2000, -2000, 0, 0, 2000), GREY)]
         else:
             nb = [n for n in nb if n.name not in own]
-        bv.component_sheet(Part(title, shape, COL[key]), nb[:14], "SinkGrab", dwg, title, mat, notes, DATE, out_dir=str(DWG))
+        rev = REV.get(dwg)
+        if rev:
+            bv.component_sheet(Part(title, shape, COL[key]), nb[:14], "SinkGrab", dwg, title, mat, notes, rev[-1][2],
+                               rev=rev[-1][0], revisions=rev, out_dir=str(DWG))
+        else:
+            bv.component_sheet(Part(title, shape, COL[key]), nb[:14], "SinkGrab", dwg, title, mat, notes, DATE, out_dir=str(DWG))
         print("sheet", dwg)
 
 
@@ -337,22 +355,26 @@ def joints():
               part("Tie rod", crop(GRAB["tie_rods"], *r8), "tie_rods"),
               part("20 mm pin", crop(GRAB["shell_pins"], *r8), "shell_pins")],
              OUT / "joint-08.png", "Joint 8: tie rod on the shell lug", "Pin through the rod and lug, R-clip outside", azim=-40, elev=20)
-    # 9 shear link at the dead end (on the crosshead, 3:1 tackle)
-    rp = P["sheave"][1]
-    al = math.radians(P["head_sheave_skew"])
-    xd, yd = rp - 2 * rp * math.cos(al), -2 * rp * math.sin(al)
-    r9 = (xd - 40, xd + 40, yd - 40, yd + 40, 130, 280)
-    bv.joint([part("Dead-end lug on the crosshead", crop(GRAB["crosshead"], *r9), "crosshead"),
+    # 9 3:1 tackle: upper sheave in the head and shear link on the crosshead dead end
+    zh = D["head_pin_z"]
+    r9 = (-20, 110, -40, 175, 100, zh - 10)
+    bv.joint([part("Head cheeks", crop(GRAB["head"], *r9), "head"),
+              part("Upper sheave", GRAB["upper_sheave"], "upper_sheave"),
+              part("Upper sheave axle", GRAB["upper_axle"], "upper_axle"),
+              part("Crosshead and dead-end lug", crop(GRAB["crosshead"], *r9), "crosshead"),
+              part("Crosshead sheave", crop(GRAB["cross_sheave"], *r9), "cross_sheave"),
               part("Shear link plates", GRAB["shear_link"], "shear_link"),
               part("Calibrated link pin", GRAB["link_pin"], "link_pin")],
-             OUT / "joint-09.png", "Joint 9: shear link at the tackle dead end", "The line's thimble hangs on the small pin; if it shears the grab opens", azim=-30)
+             OUT / "joint-09.png", "Joint 9: upper sheave and shear link (3:1 tackle)",
+             "Line up from the crosshead sheave, over the upper sheave, down to the link pin", azim=-40, elev=18)
     # 10 scraper linkage
-    r10 = (0, 420, -60, 60, -340, 140)
+    r10 = (-60, 420, -60, 60, -340, 140)
     bv.joint([part("Pole and hub", crop(SCR["scraper_pole"], *r10), "scraper_pole"),
               part("Arm", crop(SCR["arms"], *r10), "arms"),
               part("Struts", crop(SCR["struts"], *r10), "struts"),
-              part("Sleeve and foot", crop(SCR["sleeve"], *r10), "sleeve")],
-             OUT / "joint-10.png", "Joint 10: arm, strut and sliding sleeve", "The pole's weight slides it down through the sleeve and opens the arm", azim=-90, elev=5)
+              part("Slotted sleeve and foot", crop(SCR["sleeve"], *r10), "sleeve"),
+              part("Cross pin in the slots", SCR["cross_pin"], "cross_pin")],
+             OUT / "joint-10.png", "Joint 10: arm, strut and slotted sleeve", "Open: pin at the slot bottoms. Lifted: the sleeve slides 300 down to the slot tops and folds the arm", azim=-60, elev=5)
     # 11 pole spigot joint
     z0 = P["head_len"]
     r11 = (-40, 40, -40, 40, z0 - 220, z0 + 220)
@@ -377,9 +399,9 @@ def joints():
     bv.joint([Part("Bottom caisson ring (site, cut)", ringc, "#A8A29E"),
               part("Scraper head", crop(SCR["scraper_pole"], -100, 700, -400, 400, -500, 900), "scraper_pole"),
               part("Arm and toe", crop(SCR["arms"], 0, 700, -100, 100, -100, 200), "arms"),
-              part("Sleeve and foot", crop(SCR["sleeve"], 0, 700, -400, 400, -500, 200), "sleeve"),
+              part("Slotted sleeve and foot", crop(SCR["sleeve"], 0, 700, -400, 400, -500, 200), "sleeve"),
               part("Struts", crop(SCR["struts"], 0, 700, -100, 100, -500, 200), "struts")],
-             OUT / "joint-14.png", "Joint 14: toe under the cutting edge", "Toe 40 mm past the ring's outer face, just below the edge; skid on the bore", azim=-90, elev=8)
+             OUT / "joint-14.png", "Joint 14: toe under the cutting edge", "Toe blade 40 mm past the ring's outer face, just below the edge; skid on the bore", azim=-90, elev=8)
     print("joints 14")
 
 
@@ -408,7 +430,7 @@ def steps():
     go([fr, dr, db, cb, cs, ss, ch, sp], [mv(gd, (-300, 0, 0))], "Step 6: chain guard on", "Two M6 screws into the tabs; never turn the cranks with it off")
     go([fr, dr, db, cb, cs, ss, ch, sp, gd], [mv(pw, (250, 0, 150))], "Step 7: pawl on its pin", "Washer and R-clip; it drops into the ratchet by its own weight", azim=-30)
     go([fr, dr, db, cb, cs, ss, ch, sp, gd, pw], [mv(bk, (300, 0, 0))], "Step 8: band brake and weighted lever", "Pin the anchor end, then the link and lever; weight on", azim=-30)
-    go([fr, dr, db, cb, cs, ss, ch, sp, gd, pw, bk], [mv(ck, (0, 0, 250))], "Step 9: cranks on", "Square sockets onto the shaft ends, 180 deg apart; ball-lock pins in")
+    go([fr, dr, db, cb, cs, ss, ch, sp, gd, pw, bk], [mv(ck, (0, 0, 250))], "Step 9: cranks on", "180 deg apart, ball-lock pins in; the long two-hand handle on the +X end")
     # grab
     G = lambda k, nm, e=(0, 0, 0): Part(nm, GRAB[k], COL[k], None, e)  # noqa: E731
     sa, sb_ = G("shell_a", "Shell A"), G("shell_b", "Shell B")
@@ -421,16 +443,16 @@ def steps():
     base += [G("tie_rods", "Tie rods"), G("shell_pins", "Pins")]
     go(base, [G("head", "Head", (0, 0, 350))], "Step 12: head onto the tie rods", "Head pins through the upper rod holes; R-clips")
     base += [G("head", "Head")]
-    go(base, [G("ballast", "Ballast plates", (0, 0, 300)), G("upper_sheave", "Head sheave", (0, -250, 0)), G("upper_axle", "Head sheave axle", (0, -350, 0)),
-              G("shear_link", "Shear link", (-250, 0, 150)), G("link_pin", "Link pin", (-250, 0, 150))],
-       "Step 13: ballast plates, head sheave and shear link", "M10 bolts for the plates; head sheave on its axle between the cheeks; link on the crosshead lug, calibrated pin above")
+    go(base, [G("ballast", "Ballast plates", (0, 0, 300)), G("upper_sheave", "Upper sheave", (250, 0, 0)), G("upper_axle", "Axle", (400, 0, 0)),
+              G("shear_link", "Shear link", (0, 250, 150)), G("link_pin", "Link pin", (0, 250, 150))],
+       "Step 13: ballast, upper sheave and shear link", "M10 bolts for the plates; sheave between the cheeks; link on the crosshead lug")
     # scraper
     Sx = lambda k, nm, e=(0, 0, 0): Part(nm, SCR[k], COL[k], None, e)  # noqa: E731
     go([Sx("scraper_pole", "Scraper head")], [Sx("sleeve", "Sleeve and foot", (0, 0, -300)), Sx("arms", "Arms", (0, 0, 250)),
                                               Sx("struts", "Struts", (0, 0, 150)), Sx("arm_pins", "Arm pins", (0, 0, 250)),
-                                              Sx("sleeve_pins", "Strut pins", (0, 0, -300))],
-       "Step 14: arms, struts and sleeve onto the pole", "Sleeve on from below before the stop collar; pins and R-clips", azim=-80, elev=12)
-    go([Sx("scraper_pole", "Scraper head"), Sx("arms", "Arms"), Sx("sleeve", "Sleeve"), Sx("struts", "Struts")],
+                                              Sx("sleeve_pins", "Strut pins", (0, 0, -300)), Sx("cross_pin", "Cross pin", (0, -250, -300))],
+       "Step 14: arms, struts and sleeve onto the pole", "Sleeve on from the spike end; cross pin through slots and pole; pins and R-clips", azim=-80, elev=12)
+    go([Sx("scraper_pole", "Scraper head"), Sx("arms", "Arms"), Sx("sleeve", "Sleeve"), Sx("struts", "Struts"), Sx("cross_pin", "Cross pin")],
        [Sx("pole_section", "Pole section", (0, 0, 600)), Sx("tbar", "T-bar", (0, 0, 900))],
        "Step 15: pole section and T-bar", "Spigot into the pole, M12 bolt; T-bar socket over the top spigot", size=(7, 8), azim=-80, elev=12)
     # site
@@ -457,7 +479,7 @@ def steps():
                  Part("Head sheave for 8 mm rope", head_sheave(P), COL["hs_sheave"], None, (0, 0, 300))]
     go([Part("Capstan, drawbar and cradle", Compound([CAP[k] for k in capk] + [LEAD["drawbar"], LEAD["cradle"], LEAD["lead_sheave"]]), GREY),
         Part("Frame and doors", WH["wh_frame"] + WH["doors"], GREY)], grab_site,
-       "Step 20: reeve the line and hang the grab", "Drum, lead sheave, up leg A, head sheave, down the guide tube, round the crosshead and head sheaves to the shear link (3:1)",
+       "Step 20: reeve the line and hang the grab", "Drum, lead sheave, leg A, head sheave; in the grab: guide, crosshead sheave, upper sheave, link",
        context=ctx_tri, size=(9, 6.5), azim=-35)
     print("steps", n)
 

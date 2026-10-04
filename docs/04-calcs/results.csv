@@ -1,12 +1,12 @@
 id,requirement,value,target,status
-R1,Water depth reached without de-watering,Sinks while skin friction < 1.66 kPa; estimate 1 to 3 kPa; toes cut 40 mm past the ring's outer face to loosen the soil,At least 3 m,At risk
-R2,Fits rings of 0.8 to 1.3 m,Grab 468 mm across; scraper folds to 377 mm radius; toes and skids adjustable,0.8 to 1.3 m,Met by design
-R3,Grab load per bite,21.2 L at 75 % fill; 14.1 L at 50 %; lips close with about 687 N through the 3:1 tackle,At least 20 L,At risk
-R4,"Cycle time at 10 m, two operators",3.2 min with a third person at the cranks for the hoist (3.8 min with two),3 min or less,Not met on paper
+R1,Water depth reached without de-watering,Sinks while skin friction < 1.66 kPa; estimate 1 to 3 kPa; toes cut 40 mm past the ring to keep it low,At least 3 m,At risk; friction measured in the first trial
+R2,Fits rings of 0.8 to 1.3 m,Grab 468 mm across; scraper folds to 389 mm radius on a 300 mm sleeve travel; toes and skids adjustable,0.8 to 1.3 m,Met by design
+R3,Grab load per bite,21.2 L at 75 % fill with a 3:1 tackle (50% more closing force); 14.1 L at 50 %,At least 20 L,Met on paper at the assumed fill; fill confirmed in the test-pit trial
+R4,"Cycle time at 10 m, three people at the cranks during the hoist",3.2 min (3.8 min with two),3 min or less,Not met on paper by about 0.2 min; the timed trial decides
 R5,Crank force,54 N each with two (108 N for one),150 N or less,Met on paper
 R6,Tilt,Resolution 1 in 253; corrected by scraping the high side and saddles,1 in 80 or better,Not verifiable at TRL 3
 R7,Proof load of lifting parts,Proof 193 kg within HatchSide proof 225 kg; line factor 10.4,2 x working load,Met on paper
 R8,No person in the well,Every task from the surface; doors close the shaft,100 %,Met by design
-R9,Portability,Heaviest piece 25.1 kg (scraper head),25 kg or less; small pickup,Not met on paper (0.1 kg over)
+R9,Portability,Heaviest piece 22.9 kg (capstan frame),25 kg or less; small pickup,Met on paper
 R10,Local build,"Steel section, plate, stick welding, drilling; rolled shell skins",Stick welder and hand tools,Met by design
-R11,Prototype cost,"USD 2,506.00","Value-engineering target USD 4,000","Met on paper, within the target"
+R11,Prototype cost,"USD 2,566.00","Value-engineering target USD 4,000","Met on paper, within the target"

@@ -4,9 +4,11 @@
 
 ![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827) [![REUSE compliant](https://github.com/BoujeeEnjinia1701/sinkgrab/actions/workflows/reuse.yml/badge.svg)](https://github.com/BoujeeEnjinia1701/sinkgrab/actions/workflows/reuse.yml)
 
-**Area:** Food and water security · **TRL:** 3 of 9 (proof of concept on paper; constructable design) · **Value-engineering target:** USD 4,000; estimated parts cost USD 2,561 · **Difficulty:** 3 of 5
+**Area:** Food and water security · **TRL:** 3 of 9 (proof of concept on paper; constructable design) · **Value-engineering target:** USD 4,000; estimated parts cost USD 2,566 · **Difficulty:** 3 of 5
 
 Deepens village wells under water with a rope grab and under-curb scraper, without divers or pumps.
+
+> CONCEPT, NOT FOR FABRICATION. SinkGrab is a TRL 3 design on paper: it has not been built or tested.
 
 ## Concept rationale
 
@@ -55,7 +57,7 @@ Full problem statement: [docs/01-problem.md](docs/01-problem.md)
 
 ## Concept
 
-A rope grab and under-curb scraper worked from the HatchSide tripod and a hand capstan; well diggers lower them into a flooded hand-dug well to dig soil out under water and undercut the curb ring so the lining sinks, without divers or pumps. One 8 mm line does everything: the grab goes down closed, its head's weight opens it on the bottom, and three people at the cranks (two on a two-hand handle) close it through a 3:1 tackle on a bite of about 21 L and lift it. A shear link and a crank shear pin keep the line inside the tripod's 150 kg rating. The scraper's arms open under the cutting edge when the pole's weight rests on its foot, and two people turn it with a T-bar through the closed well-head doors.
+A rope grab and under-curb scraper worked from the HatchSide tripod and a hand capstan; well diggers lower them into a flooded hand-dug well to dig soil out under water and undercut the curb ring so the lining sinks, without divers or pumps. One 8 mm line does everything: the grab goes down closed, its head's weight opens it on the bottom, and two people at the cranks, three during the hoist, close it through a 3:1 tackle on a bite of about 21 L and lift it. A shear link and a crank shear pin keep the line inside the tripod's 150 kg rating. The scraper's arms open under the cutting edge when the pole's weight rests on its foot, and two people turn it with a T-bar through the closed well-head doors.
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md) · Requirements: [docs/03-requirements.md](docs/03-requirements.md) · Calculations: [docs/04-calcs/01-sizing.md](docs/04-calcs/01-sizing.md) · Prototype build plan: [docs/05-build-plan.md](docs/05-build-plan.md) · Design decisions: [docs/06-design-decisions.md](docs/06-design-decisions.md)
 

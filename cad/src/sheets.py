@@ -1,4 +1,4 @@
-"""SinkGrab drawing sheets, Rev P3 (TRL 3, constructable design SKG-DDR-002, round 2 decisions SKG-DDR-003).
+"""SinkGrab drawing sheets: SKG-DWG-001 Rev P3, SKG-DWG-002 Rev P4 (TRL 3, constructable design SKG-DDR-002).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/SKG-DWG-001 (well-head layout: capstan, lead cradle, drawbar, well-head frame
@@ -20,7 +20,8 @@ from model import PARAMS as P, derived, build_components, grab_parts, scraper_pa
 DATE = "2026-10-03"
 REVS = [("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
         ("P2", "SKG-DDR-002: design for construction", DATE, "AC"),
-        ("P3", "SKG-DDR-003: 3:1 tackle, two-hand crank handle, toes 40 mm past the ring", DATE, "AC")]
+        ("P3", "SKG-DDR-003: 3:1 tackle, long crank handle, toe blades", DATE, "AC")]
+REVS_002 = REVS + [("P4", "SKG-DDR-004: slotted scraper sleeve and cross pin", "2026-10-04", "AC")]
 
 
 def safe_project_views(part, workdir, line_weight=0.35):
@@ -75,7 +76,7 @@ def layout_sheet():
         f"Well-head frame: 50 x 50 x 5 angle, opening {P['wh_frame'][0]:.0f} square, on the collar",
         "Doors 1,364 x 680, hinged at y = +/- 695; 64 mm pole hole when closed",
         f"Grab shown closed at the dump position, hinge {D['grab_hinge_site']:,.0f} up",
-        "Capstan: 4:1 chain, 3 mm shear pin, pawl, weighted band brake",
+        "Capstan: 4:1 chain, 3 mm shear pin, pawl, weighted band brake; +X handle 240 for two",
         "Third-angle; front view from -Y",
     ], x=276, y=135, width=146)
     out = s.save(ROOT / "cad" / "drawings" / "SKG-DWG-001")
@@ -92,20 +93,21 @@ def tools_sheet():
     both = Compound([Pos(-900, 0, 0) * grab, Pos(500, 0, 300) * scr])
     work = ROOT / "cad" / "drawings" / "_views2"
     views = safe_project_views(both, work, line_weight=0.3)
-    s = Sheet(project="SinkGrab", title="Clamshell grab and under-curb scraper: general arrangement", dwg_no="SKG-DWG-002", rev="P3",
-              author="Amish Chadha", date=DATE, scale=1 / 20, theme="technical",
+    s = Sheet(project="SinkGrab", title="Clamshell grab and under-curb scraper: general arrangement", dwg_no="SKG-DWG-002", rev="P4",
+              author="Amish Chadha", date="2026-10-04", scale=1 / 20, theme="technical",
               material="Steel plate and section, wear-resistant lips and toes; bought sheave and pins per bom/bom.csv. PRELIMINARY, NOT FOR FABRICATION",
-              revisions=REVS)
+              revisions=REVS_002)
     s.add_ortho(views)
-    s.add_svg(views["iso"], 276, 32, 140, 92, label="Isometric view", sublabel="Not to scale; grab left (closed), scraper head right (arms open)")
+    s.add_svg(views["iso"], 276, 40, 140, 84, label="Isometric view", sublabel="Not to scale; grab left (closed), scraper head right (arms open)")
     s.add_notes("Main dimensions and interfaces (mm)", [
         f"Grab shells R {P['shell_R']:.0f} x {P['shell_B']:.0f} wide; closed span {2 * (P['shell_R'] + P['shell_t']):.0f}; 28.3 L",
         f"Hinge pin {P['hinge_pin']:.0f}; tie rods 30 x 10 at {P['rod_len']:.0f} centres; head pins at x +/- {P['head_pin_x']:.0f}",
         f"Head to crosshead stroke {D['stroke']:.0f}; open {P['open_deg']:.0f} deg, lips {D['lip_span_open']:.0f} apart",
-        "Closing line: guide tube, crosshead sheave, head sheave, down to the shear link (3:1)",
+        "Line: guide tube, crosshead sheave, upper sheave, shear link on crosshead (3:1)",
         "Shear link pin about 1.9 mm, releases 1.20 to 1.47 kN (break-tested)",
-        f"Scraper toes at {P['toe_r']:.0f} radius, {P['toe_r'] - P['ring'][0] / 2 - P['ring'][1]:.0f} beyond a 1.0 m ring's outer face",
-        f"Arms fold to {D['fold_toe_r']:.0f} radius when the pole is lifted {P['fold_lift']:.0f} on the sleeve",
+        f"Toe blades at {P['toe_r']:.0f} radius, {P['toe_r'] - P['ring'][0] / 2 - P['ring'][1]:.0f} beyond a 1.0 m ring's outer face",
+        f"Arms fold to {D['fold_toe_r']:.0f} radius: sleeve slides {D['sleeve_travel']:.0f} on a 12 cross pin",
+        f"Sleeve 54 x {P['sleeve_len']:.0f}, slot 13 x {P['slot'][1]:.0f} each side; no stop collar",
         f"Centralizer skids at {P['cent_r']:.0f} radius, {P['cent_z']:.0f} above the toes",
         f"Foot plate {P['foot_d']:.0f} dia; sump {P['sump']:.0f} below the toe line",
         "Pole 42.4 x 2.6 in 2 m sections, 36 spigot and M12 cross bolt",
