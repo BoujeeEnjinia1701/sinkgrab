@@ -3,9 +3,9 @@ doc_id: SKG-PRB-001
 title: SinkGrab problem statement
 project: SinkGrab
 doc_type: Problem statement
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-10-03'
+date: '2026-10-24'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,6 +17,10 @@ revisions:
   date: '2026-10-03'
   author: Amish Chadha
   change: TRL 2 update; first co-design candidate, safety section, open questions answered by the TRL 2 review (SKG-DDR-001) and replaced by questions for the first trials
+- version: "0.3"
+  date: '2026-10-24'
+  author: Amish Chadha
+  change: "Kit 1.9.1 upgrade: users-and-needs and stakeholder tables (STANDARDS section 22) drawn from the users, context and co-design notes; carbon dioxide named among the shaft gases"
 ---
 
 # SinkGrab problem statement
@@ -31,12 +35,24 @@ Existing methods all put a person at the bottom. The manual method is a short ho
 
 ## Users and context
 
-| User | Need | Context |
+*Table 1. Users and needs. The user requirements (SKG-URS-001) are drawn from this table and Table 2.*
+
+| User type | Goals and needs | Typical use scenario | Pain points and challenges |
+| --- | --- | --- | --- |
+| Village well-digging crews | Dig 2 to 3 m below the water table without pumps or anyone under water; keep the rings sinking straight; finish a well in a few days | Dry-season deepening of a lined well, or the wet part of a new caisson well; a crew of 3 to 5 with a tripod | Pumps and bad air kill people at the bottom; without pumps the limit is about 1 m below the water table; rings stick or tilt; work is hard and hot |
+| WASH programme engineers (NGOs, district water departments) | A documented, repeatable method they can specify, train and inspect; lifting gear they can trust; a gas check before work | Well rehabilitation programmes and drought response across many villages | No method for digging under water from the surface; no record of lifting tests; crews improvise with engines |
+| Well committees and households | A well that gives water all year at a cost they can meet; water that stays fit to drink | Community and household wells, often shared | Wells dry up in the dry season; queues and long walks; deepening is costly and dangerous |
+| Local fabricators | Drawings they can build and repair with a stick welder, drill and hand tools; parts they can buy nearby | Small workshops near the well sites | Imported equipment cannot be repaired; drawings assume machine tools they do not have |
+
+*Table 2. Stakeholders.*
+
+| Stakeholder group | Role or interest | Engagement needed |
 | --- | --- | --- |
-| Village well-digging crews | Dig 2 to 3 m below the water table without pumps or anyone under water | Dry-season deepening and new caisson wells, crews of 3 to 5 |
-| WASH programme engineers (NGOs, district water departments) | A documented, repeatable method they can specify, train and inspect | Well rehabilitation programmes and drought response |
-| Well committees and households | A well that gives water all year at a cost they can meet | Community and household wells, often shared |
-| Local fabricators | Drawings they can build and repair with a welder, drill and hand tools | Small workshops near the well sites |
+| District groundwater departments (first candidate: the Kerala Ground Water Department through a district office) | Regulate and support well construction; host a partner trial | Approach for a co-design partner and a trial well (SKG-DDR-001, item 12; not yet approached) |
+| Rural water NGOs (second candidate: an NGO in the Ethiopian highlands) | Run rehabilitation programmes; train crews | Co-design and a second trial site; feedback on the method statement |
+| Owners of the HatchSide tripod and CalRig (Design Molecule Labs) | Share the tripod and the proof-load rig | Keep the interfaces unchanged; proof-load the line, cradle and capstan on CalRig |
+| Local safety and labour authorities | Rules for lifting gear, gas testing and work at open shafts | Confirm which rules apply at the trial site (SKG-REG-001) |
+| Communities around the trial wells | Use the water; live with the work site | Consent, barrier and briefing; disinfection of the well after the work |
 
 ## Operating environment
 
@@ -44,7 +60,7 @@ Existing methods all put a person at the bottom. The manual method is a short ho
 - Well depth about 5 to 30 m (estimate); water standing 0 to 3 m over the digging face.
 - Soils from silt and fine sand to laterite, clay and gravel; boulders possible. Fine sand can boil up into the ring.
 - Hot, dusty or wet surroundings; no mains power; work often in the dry season when water tables are lowest.
-- Possible foul air in the shaft (carbon monoxide, carbon dioxide or hydrogen sulphide).
+- Possible foul air in the shaft (carbon monoxide, carbon dioxide or hydrogen sulphide). Carbon dioxide is heavier than air, collects in wells and is not read by a four-gas detector (SKG-STM-001, C2).
 
 ## Constraints
 

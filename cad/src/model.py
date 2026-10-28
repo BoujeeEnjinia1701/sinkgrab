@@ -4,11 +4,11 @@ Run from the repo root:  python cad/src/model.py          (checks, masses and ex
                          python cad/src/model.py --check  (constructability checks only)
 Exports STEP and STL into cad/step and cad/stl:
     sinkgrab-capstan     hand capstan: frame, winding drum with brake drum and ratchet wheel, bearings,
-                         chain drive with shear pin hub, chain guard, pawl, weighted band brake, cranks
+                         chain drive with a friction slip clutch, chain guard, pawl, weighted band brake, cranks
     sinkgrab-lead        foot cradle with lead sheave (stands under the HatchSide leg A foot) and drawbar
     sinkgrab-grab        two-shell clamshell grab, closed: head with ballast plates, tie rods, shells,
                          crosshead with hinge pin, sheave and dead-end arm, upper sheave in the head
-                         (3:1 tackle), shear link
+                         (3:1 tackle), dead-end load indicator
     sinkgrab-scraper     under-curb scraper head (deployed), one pole section and the turning T-bar
     sinkgrab-wellhead    well-head frame with two folding doors and four datum brackets
     sinkgrab-saddle      one ballast saddle
@@ -22,9 +22,10 @@ Constructable design, 2026-10-03 (SKG-DDR-002, decided under Amish's pre-approva
     one closing line does everything: the grab is lowered closed, opens under its head's weight when
     the line is slacked on the bottom, and is closed and lifted by the same line through a 3:1 tackle
     (crosshead sheave, upper sheave in the head, dead end on the crosshead; Amish's decision 28B of
-    2026-10-03, SKG-DDR-003); a calibrated shear link at the tackle's dead end limits the line to the
-    tripod's 150 kg rating;
-    the hand capstan is a single winding drum with a 4:1 chain drive, a shear pin hub, a ratchet and
+    2026-10-03, SKG-DDR-003); a peak-reading load indicator at the tackle's dead end shows the highest
+    pull of every lift (Amish's decision O4 of 2026-10-25, SKG-DEC-001; it replaces the shear link);
+    the hand capstan is a single winding drum with a 4:1 chain drive, a friction slip clutch on the crank
+    shaft that caps the line at the tripod's 150 kg rating (decision O4; it replaces the shear pin), a ratchet and
     pawl, and a weighted band brake that is on unless its lever is lifted; a drawbar to a cradle
     under the leg A foot closes the rope load inside the kit, so the tripod sees its own winch case;
     the under-curb scraper is a centred pole head with two arms that the pole's weight opens under
@@ -67,6 +68,9 @@ PARAMS = {
     "x_brg": (-200.0, 230.0),             # bearing centre planes (frame side planes)
     "hc": 850.0, "yc_off": -150.0,        # crank shaft height and offset from the drum axis (away from the well)
     "chain_p": 12.7, "z_small": 12, "z_big": 48, "sprocket_t": 8.0,
+    # crank slip clutch (Amish's decision O4 of 2026-10-25, SKG-DEC-001): disc OD, facing bore, driven disc t,
+    # flange and pressure plate t, facing t; the guard grows 21 mm outboard and 11 mm inboard to hold it
+    "clutch": (84.0, 40.0, 6.0, 8.0, 4.0), "guard_out": 47.0, "guard_in": 31.0,
     "crank_r": 250.0, "handle": (32.0, 120.0), "handle_long": 240.0,   # +X crank: two-hand handle for a third person (SKG-DDR-003)
     "shs": (40.0, 2.0),                   # frame tube
     "rail_half": 330.0,                   # base rails run y_d +/- this
@@ -80,7 +84,8 @@ PARAMS = {
     "open_deg": 50.0, "tackle": 3,       # parts of line between head and crosshead (3:1, SKG-DDR-003)
     # scraper (local: pole axis = Z, z = 0 at the toe cutting level, deployed)
     "pole": (42.4, 2.6), "pole_sec": 2000.0, "spigot": (36.0, 150.0),
-    "hub": (70.0, 90.0), "pivot": (45.0, 80.0), "toe_r": 615.0, "arm_bar": (50.0, 10.0),
+    "hub": (70.0, 90.0), "pivot": (60.0, 80.0), "toe_r": 615.0, "arm_bar": (50.0, 10.0),   # pivot 45 -> 60 so the arm's
+    # eye (18 mm radius round the 16 mm pin) clears the 70 mm hub; toe radius and sleeve travel unchanged (SKG-DEC-001 D-11)
     "toe": (100.0, 80.0, 10.0), "toe_ext": 25.0,   # toe blade 25 beyond the toe plate: cuts 40 past a 1.0 m ring (SKG-DDR-003)
     "sleeve": (54.0, 110.0), "foot_d": 250.0, "sump": 330.0,   # sleeve OD; strut lugs 100 above its foot (linkage datum)
     "sleeve_len": 340.0, "slot": (13.0, 312.0), "cross_pin": (12.0, 70.0),  # slotted sleeve and cross pin (SKG-DDR-004)
@@ -214,7 +219,7 @@ def derived(P=PARAMS):
     D["x_brake"] = (half + ft + 6.0, half + ft + 6.0 + bd_w)
     D["x_ratchet"] = (D["x_brake"][1] + 8.0, D["x_brake"][1] + 8.0 + P["ratchet"][3])
     D["x_spr"] = P["x_brg"][0] - 62.0                        # sprocket plane, outboard of the -X bearing
-    D["x_guard"] = (D["x_spr"] - 26.0, D["x_spr"] + 20.0)
+    D["x_guard"] = (D["x_spr"] - P["guard_out"], D["x_spr"] + P["guard_in"])   # 26 and 20 before the clutch (O4)
     D["drum_shaft_x"] = (D["x_spr"] - 12.0, P["x_brg"][1] + 45.0)
     D["crank_shaft_x"] = (D["x_guard"][0] - 40.0, P["x_brg"][1] + 75.0)
     D["x_crank"] = ((D["x_guard"][0] - 22.0, D["x_guard"][0] - 12.0), (P["x_brg"][1] + 55.0, P["x_brg"][1] + 65.0))
@@ -388,15 +393,26 @@ def capstan_parts(P=PARAMS):
     # ---- bearings
     out["drum_bearings"] = _pillow(P, "ucp206", xa, yd, hd, P["drum_shaft"]) + _pillow(P, "ucp206", xb, yd, hd, P["drum_shaft"])
     out["crank_bearings"] = _pillow(P, "ucp205", xa, yc, hc, P["crank_shaft"]) + _pillow(P, "ucp205", xb, yc, hc, P["crank_shaft"])
-    # ---- crank shaft, small sprocket hub, shear pin
+    # ---- crank shaft, driven member (sprocket and two driven discs on a sleeve that runs on the shaft) and
+    #      the friction slip clutch (Amish's decision O4 of 2026-10-25): facing and inner flange welded to the
+    #      shaft inboard, facing, keyed pressure plate, two disc springs, tab washer and KM5 locknut outboard
     c0, c1 = D["crank_shaft_x"]
     out["crank_shaft"] = xcyl(yc, hc, P["crank_shaft"] / 2, c0, c1)
-    hub = xcyl(yc, hc, 18.0, xsp - 4.0, xsp + 22.0) - xcyl(yc, hc, P["crank_shaft"] / 2, xsp - 5, xsp + 23)
+    cd, cf, ct, cp_t, cft = P["clutch"]
+    r_sh = P["crank_shaft"] / 2
+    sleeve = xcyl(yc, hc, 18.0, xsp - 17.0, xsp + 17.0) - xcyl(yc, hc, r_sh, xsp - 18, xsp + 18)
     small = xcyl(yc, hc, D["pd_small"] / 2 + 3.0, xsp - 4, xsp + 4) - xcyl(yc, hc, 18.0, xsp - 5, xsp + 5)
-    out["small_sprocket"] = fuse([hub, small])
-    out["shear_pin"] = rod((xsp + 12.0, yc, hc - 22.0), (xsp + 12.0, yc, hc + 22.0), 2.0)
-    out["crank_shaft"] = out["crank_shaft"] - rod((xsp + 12.0, yc, hc - 22.0), (xsp + 12.0, yc, hc + 22.0), 2.0)
-    out["small_sprocket"] = out["small_sprocket"] - rod((xsp + 12.0, yc, hc - 22.0), (xsp + 12.0, yc, hc + 22.0), 2.0)
+    discs = [xcyl(yc, hc, cd / 2, x0, x0 + ct) - xcyl(yc, hc, 18.0, x0 - 1, x0 + ct + 1) for x0 in (xsp - 17.0, xsp + 11.0)]
+    out["small_sprocket"] = fuse([sleeve, small] + discs)
+    ring = lambda ro, ri, x0, x1: xcyl(yc, hc, ro, x0, x1) - xcyl(yc, hc, ri, x0 - 1, x1 + 1)
+    cl = [ring(cd / 2, cf / 2, xsp + 17.0, xsp + 17.0 + cft),                    # facing on the inner flange
+          ring(cd / 2, r_sh, xsp + 21.0, xsp + 21.0 + cp_t),                      # inner flange, welded to the shaft
+          ring(cd / 2, cf / 2, xsp - 17.0 - cft, xsp - 17.0),                     # facing on the pressure plate
+          ring(cd / 2, r_sh, xsp - 29.0, xsp - 21.0),                             # pressure plate, keyed
+          ring(25.0, 12.7, xsp - 35.1, xsp - 29.0),                               # two disc springs 50 x 25.4 x 2.0
+          ring(21.0, r_sh, xsp - 36.35, xsp - 35.1),                              # MB5 tab washer
+          ring(19.0, r_sh, xsp - 43.35, xsp - 36.35)]                             # KM5 locknut
+    out["clutch"] = fuse(cl)
     # ---- chain (simplified as a flat loop band round both pitch circles)
     rb, rs = D["pd_big"] / 2, D["pd_small"] / 2
     pts = []
@@ -657,14 +673,21 @@ def grab_parts(P=PARAMS, open_deg=0.0):
            bx(xa0, xa1, sw / 2 + 1, yd_ + 20, 140.0, 185.0),
            bx(xa0, xa1, yd_ - 18, yd_ + 18, 185.0, 210.0)]
     out["crosshead"] = fuse([out["crosshead"]] + arm) - xcyl(yd_, 197.0, 8.25, xa0 - 1, xa1 + 1)
-    # shear link: two 6 mm side plates on a 16 mm pin through the dead-end lug, calibrated pin 62 above;
-    # the falling part's thimble hangs on the calibrated pin
+    # dead-end load indicator (Amish's decision O4 of 2026-10-25; it replaces the shear link): two 6 mm straps on
+    # the 16 mm pin through the lug with spacers, a housing plate across their tops, a disc spring stack on an
+    # M8 rod under it, and a fork on the rod that carries the thimble; a tell-tale ring on the rod keeps the peak
     zl = 197.0
-    lk = [bx(xa0 - 7, xa0 - 1, yd_ - 15, yd_ + 15, zl - 12, zl + 75), bx(xa1 + 1, xa1 + 7, yd_ - 15, yd_ + 15, zl - 12, zl + 75)]
-    lk.append(xcyl(yd_, zl, 8.0, xa0 - 8, xa1 + 8))
-    link = fuse(lk) - xcyl(yd_, zl + 62, 3.25, xa0 - 8, xa1 + 8)
-    out["shear_link"] = link
-    out["link_pin"] = xcyl(yd_, zl + 62, 3.0, xa0 - 9, xa1 + 9)
+    xc = (xa0 + xa1) / 2
+    li = [bx(xc - 21, xc - 15, yd_ - 15, yd_ + 15, zl - 12, zl + 48), bx(xc + 15, xc + 21, yd_ - 15, yd_ + 15, zl - 12, zl + 48),
+          bx(xc - 15, xc + 15, yd_ - 15, yd_ + 15, zl + 42, zl + 48) - zcyl(xc, yd_, 4.25, zl + 41, zl + 49)]
+    li.append(xcyl(yd_, zl, 8.0, xc - 22, xc + 22))                                  # clevis pin and spacers
+    li.append(xcyl(yd_, zl, 13.0, xc - 15, xa0) + xcyl(yd_, zl, 13.0, xa1, xc + 15))
+    li.append(zcyl(xc, yd_, 9.0, zl + 22.1, zl + 42))                                # disc spring stack
+    li.append(zcyl(xc, yd_, 4.0, zl + 14, zl + 54))                                  # M8 rod
+    li.append(zcyl(xc, yd_, 6.5, zl + 14, zl + 22.1))                                # nut and washer
+    li.append(bx(xc - 11.5, xc + 11.5, yd_ - 12, yd_ + 12, zl + 51, zl + 57))        # fork base
+    li += [bx(x0, x0 + 5, yd_ - 10, yd_ + 10, zl + 57, zl + 85) for x0 in (xc - 9.5, xc + 4.5)]
+    out["load_link"] = fuse(li) - xcyl(yd_, zl + 74, 4.25, xc - 12, xc + 12)
     return out
 
 
@@ -888,7 +911,7 @@ BOM = {  # key: (BOM line, plain name)
     "drum": (2, "Winding drum with brake drum, ratchet wheel and big sprocket"),
     "pawl": (3, "Pawl"),
     "crank_shaft": (4, "Crank shaft"),
-    "small_sprocket": (4, "Small sprocket on its shear pin hub"),
+    "small_sprocket": (4, "Small sprocket with its two driven discs"),
     "cranks": (4, "Removable cranks (2)"),
     "guard": (5, "Chain guard"),
     "brake": (6, "Band brake with weighted lever"),
@@ -906,8 +929,7 @@ BOM = {  # key: (BOM line, plain name)
     "hinge_pin": (13, "Hinge pin"),
     "cross_axle": (13, "Crosshead sheave axle"),
     "upper_axle": (10, "Upper sheave axle"),
-    "shear_link": (14, "Shear link"),
-    "link_pin": (14, "Calibrated link pin"),
+    "load_link": (14, "Dead-end load indicator"),
     "scraper_pole": (15, "Scraper head: bottom pole with hub, centralizer and spike"),
     "arms": (15, "Scraper arms with toes (2)"),
     "arm_pins": (15, "Arm pins (2)"),
@@ -923,7 +945,7 @@ BOM = {  # key: (BOM line, plain name)
     "drum_bearings": (21, "Drum bearings (2)"),
     "crank_bearings": (22, "Crank bearings (2)"),
     "chain": (23, "Roller chain"),
-    "shear_pin": (24, "Crank shear pin"),
+    "clutch": (24, "Crank slip clutch"),
     "lead_sheave": (25, "Lead sheave"),
     "lead_axle": (25, "Lead sheave axle"),
     "cross_sheave": (25, "Crosshead sheave"),
@@ -932,16 +954,16 @@ BOM = {  # key: (BOM line, plain name)
     "rope": (26, "Closing line, 8 mm"),
 }
 
-GROUP = {"capstan": ["frame", "drum", "drum_bearings", "crank_bearings", "crank_shaft", "small_sprocket", "shear_pin",
+GROUP = {"capstan": ["frame", "drum", "drum_bearings", "crank_bearings", "crank_shaft", "small_sprocket", "clutch",
                      "chain", "guard", "cranks", "pawl", "brake", "stakes"],
          "lead": ["cradle", "lead_sheave", "lead_axle", "drawbar", "draw_pins"],
          "grab": ["head", "ballast", "tie_rods", "shell_pins", "shell_a", "shell_b", "crosshead", "hinge_pin",
-                  "cross_sheave", "cross_axle", "upper_sheave", "upper_axle", "shear_link", "link_pin"],
+                  "cross_sheave", "cross_axle", "upper_sheave", "upper_axle", "load_link"],
          "scraper": ["scraper_pole", "arms", "arm_pins", "sleeve", "sleeve_pins", "cross_pin", "struts", "pole_section", "tbar"],
          "wellhead": ["wh_frame", "doors"],
          "saddle": ["saddles"]}
 
-BOUGHT = {"drum_bearings", "crank_bearings", "chain", "shear_pin", "lead_sheave", "cross_sheave", "upper_sheave", "hs_sheave", "rope", "link_pin"}
+BOUGHT = {"drum_bearings", "crank_bearings", "chain", "lead_sheave", "cross_sheave", "upper_sheave", "hs_sheave", "rope"}
 
 
 def grab_site(P=PARAMS, z_hinge=None):
@@ -1025,13 +1047,13 @@ def checks(P=PARAMS, verbose=True):
     D = derived(P)
     res = {"overlaps": [], "floating": [], "clearances": {}}
     holds = [("drum_bearings", "frame"), ("crank_bearings", "frame"), ("drum", "drum_bearings"),
-             ("crank_shaft", "crank_bearings"), ("small_sprocket", "crank_shaft"), ("shear_pin", "small_sprocket"),
+             ("crank_shaft", "crank_bearings"), ("small_sprocket", "crank_shaft"), ("clutch", "crank_shaft"), ("clutch", "small_sprocket"),
              ("cranks", "crank_shaft"), ("guard", "frame"), ("pawl", "frame"), ("brake", "frame"), ("stakes", "frame"),
              ("lead_sheave", "lead_axle"), ("lead_axle", "cradle"), ("drawbar", "draw_pins"), ("draw_pins", "cradle"),
              ("draw_pins", "frame"),
              ("hinge_pin", "crosshead"), ("hinge_pin", "shell_a"), ("hinge_pin", "shell_b"), ("cross_axle", "crosshead"),
              ("cross_sheave", "cross_axle"), ("tie_rods", "head"), ("tie_rods", "shell_pins"), ("shell_pins", "shell_a"),
-             ("ballast", "head"), ("shear_link", "crosshead"), ("link_pin", "shear_link"),
+             ("ballast", "head"), ("load_link", "crosshead"),
              ("upper_axle", "head"), ("upper_sheave", "upper_axle"),
              ("arms", "arm_pins"), ("arm_pins", "scraper_pole"), ("struts", "arm_pins"), ("struts", "sleeve_pins"), ("sleeve_pins", "sleeve"),
              ("sleeve", "scraper_pole"), ("cross_pin", "scraper_pole"), ("cross_pin", "sleeve"), ("pole_section", "scraper_pole"), ("tbar", "pole_section"),
@@ -1083,8 +1105,16 @@ def checks(P=PARAMS, verbose=True):
     return res
 
 
-def masses(P=PARAMS):
-    """kg per component from model volumes (steel 7850, cast iron 7200)."""
+def masses(P=PARAMS, detail=True):
+    """kg per component key. Kit 1.9: from the detailed D3 parts (skg_detail), every pin, clip, bolt, collar and
+    weld bead counted with its material's density; detail=False gives the kit 1.7 simplified solids."""
+    if detail:
+        return masses_detailed(P)
+    return _masses_simplified(P)
+
+
+def _masses_simplified(P=PARAMS):
+    """kg per component from the kit 1.7 simplified model volumes (steel 7850, cast iron 7200)."""
     m = {}
     cap = capstan_parts(P)
     lead = lead_parts(P)
@@ -1119,6 +1149,218 @@ def export(P=PARAMS):
     print("exported STEP and STL to cad/step and cad/stl")
 
 
+# ===================================================================================== kit 1.9 interface
+# STANDARDS section 24. Every concept option is modelled at the stage's detail level (D3 at P3) from
+# .kit/cad_parts.py and the repo helpers in cad/src/skg_parts.py: option A (the design carried since TRL 3) in
+# cad/src/skg_detail.py, option B in cad/src/skg_option_b.py. components(option) returns cad_parts.part() dicts;
+# made and bought parts of the chosen option carry their bom/bom.csv line numbers.
+for _p in (str(ROOT / ".kit"), str(ROOT / "cad" / "src")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+TITLE = "SinkGrab"
+OPTIONS = {"A": "Rope grab and under-curb scraper", "B": "Dart-valve bailer on a jerk line"}
+PRINCIPLES = {
+    "A": "A clamshell grab on one rope digs the flooded rings, opened by its head's weight and closed through a 3:1 "
+         "tackle; a pole scraper cuts under the cutting edge so the lining sinks; a hand capstan does the lifting.",
+    "B": "A steel tube with a cutting shoe and a dart valve is spudded into the sand by jerking the capstan line "
+         "sideways; loose sand runs in from under the cutting edge, and the full tube is hoisted and dumped.",
+}
+CHOSEN = "A"
+OPTION_VIEWS = {"A": {"el": 20, "az": -35, "scale": "person", "keep_context": True, "ground_z": 0.0},
+                "B": {"el": 20, "az": -35, "scale": "person", "keep_context": True, "ground_z": 0.0}}
+GRAB_SITE = (0.0, 67.5, 1330.0)        # grab hinge at the dump position, turned so its guide tube is under the line
+SCRAPER_SITE = (1900.0, -300.0, 260.0)
+BAILER_STOWED = (0.0, 1300.0, 40.0)
+
+
+def _placed(parts, loc, suffix=""):
+    out = []
+    for p in parts:
+        q = dict(p)
+        q["shape"] = loc * p["shape"]
+        if suffix:
+            q["name"] = p["name"] + suffix
+        out.append(q)
+    return out
+
+
+def grab_loc(z=None):
+    x, y, zz = GRAB_SITE
+    return Pos(x, y, zz if z is None else z) * Rot(0, 0, 90)
+
+
+def scraper_loc():
+    return Pos(*SCRAPER_SITE) * Rot(90, 0, 0)
+
+
+def site_rope(P=PARAMS, to_z=None):
+    """The closing line at the well head: wound on the drum, under the lead sheave, up leg A, over the head
+    sheave and down to the grab's guide tube (or to the doors for option B)."""
+    import cad_parts as cp
+    from cad_parts import part
+    import skg_detail as SD
+    D = derived(P)
+    r = P["rope_d"]
+    yd, hd = D["y_d"], P["hd"]
+    ly, lz = P["lead_y"], P["lead_z"]
+    sx, sy, sz = P["hs_sheave"]
+    rp = P["sheave"][1]
+    core = P["core"][0]
+    pts = [(0.0, yd, D["rope_z_low"])]
+    a0 = math.degrees(math.atan2(D["up_a"][1] - lz, D["up_a"][0] - ly))
+    for a in [-90 + k * (a0 + 90) / 6 for k in range(7)]:
+        pts.append((0.0, ly + rp * math.cos(math.radians(a)), lz + rp * math.sin(math.radians(a))))
+    a1 = math.degrees(math.atan2(D["up_b"][1] - sz, D["up_b"][0] - sy))
+    for a in [a1 + k * (0 - a1) / 8 for k in range(9)]:
+        pts.append((0.0, sy + rp * math.cos(math.radians(a)), sz + rp * math.sin(math.radians(a))))
+    g = SD.grab_geometry(P)
+    z_end = to_z if to_z is not None else GRAB_SITE[2] + g["z1"] + 20.0
+    pts.append((0.0, D["drop_y"], z_end))
+    line = cp.rope(pts, r)
+    half = P["drum_w"] / 2
+    wound = xcyl(yd, hd, core / 2 + 2 * r, -half, half) - xcyl(yd, hd, core / 2 + 0.05, -half - 1, half + 1)
+    out = [part("Closing line, 8 mm polyester, at the well head", line, "rope", kind="bought", bom=26, group="rope"),
+           part("Closing line wound on the drum (two layers)", wound, "rope", kind="bought", bom=26, group="rope")]
+    so, spd, sw, sb = P["sheave"]
+    import skg_parts as sp
+    out.append(part("Head sheave for the 8 mm line, in the HatchSide head (bought)", sp.sheave(so * 2, spd * 2, sw, sb, r, (sx, sy, sz), (1, 0, 0)),
+                    "zinc_plated", kind="bought", bom=25, group="rope"))
+    for q in out:
+        q["key"] = "rope" if q["name"].startswith("Closing line") else "hs_sheave"
+    return out
+
+
+def spoil_tub(P=PARAMS, bom=32):
+    """Bought builder's tub (90 L) standing on the closed doors, for the dump position."""
+    from cad_parts import part, break_edges
+    from build123d import loft, Sketch, RectangleRounded, Plane as Pl
+    z0 = P["collar_h"] + P["wh_frame"][1] + P["door_angle"][1] + P["mesh_t"]
+    lo = Pl.XY.offset(z0 + 60) * RectangleRounded(560, 440, 60)
+    hi = Pl.XY.offset(z0 + 360) * RectangleRounded(660, 540, 70)
+    body = loft([lo, hi])
+    inner = loft([Pl.XY.offset(z0 + 66) * RectangleRounded(548, 428, 54), Pl.XY.offset(z0 + 361) * RectangleRounded(648, 528, 64)])
+    tub = body - inner
+    rim = Pos(0, 0, z0 + 352) * Box(700, 580, 16) - Pos(0, 0, z0 + 352) * Box(640, 520, 20)
+    legs = [Pos(sx * 240, sy * 180, z0 + 30.5) * Box(30, 30, 61) for sx in (-1, 1) for sy in (-1, 1)]
+    shape = break_edges(tub, 1.0)
+    for lg in legs:
+        shape = shape + break_edges(lg, 2.0)
+    p = part("Spoil tub, 90 L builder's tub (bought)", shape + rim, "hdpe_black", kind="bought", bom=bom, group="tub")
+    p["key"] = "tub"
+    return p
+
+
+def site_context(P=PARAMS):
+    """Context at the well head (not SinkGrab parts): the HatchSide tripod, the well collar and lining, ground."""
+    from cad_parts import part
+    collar, ground = well_context(P, depth=600.0)
+    return [part("HatchSide tripod (shared block, not in this kit)", tripod_context(P), "aluminium", kind="context", group="context"),
+            part("Well collar and lining (site)", collar, "concrete", kind="context", group="context"),
+            part("Ground round the well (site)", ground, "soil", kind="context", group="context")]
+
+
+def option_a_parts(P=PARAMS):
+    import skg_detail as SD
+    parts = SD.capstan(P) + SD.lead(P) + SD.wellhead(P)
+    parts += _placed(SD.grab(P), grab_loc())
+    parts += _placed(SD.scraper(P), scraper_loc())
+    sad = SD.saddle(P)
+    for k in range(4):
+        loc = Pos(-1900.0, -600.0 + 320.0 * k, P["saddle"][2] - P["saddle"][5]) * Rot(0, 0, 90)
+        parts += _placed(sad, loc, suffix=f" ({k + 1} of 8 shown)")
+    parts += site_rope(P)
+    parts.append(spoil_tub(P))
+    return parts
+
+
+def option_b_parts(P=PARAMS):
+    import skg_detail as SD
+    import skg_option_b as OB
+    shared = SD.capstan(P) + SD.lead(P) + SD.wellhead(P)
+    sad = SD.saddle(P)
+    for k in range(4):
+        loc = Pos(-1900.0, -600.0 + 320.0 * k, P["saddle"][2] - P["saddle"][5]) * Rot(0, 0, 90)
+        shared += _placed(sad, loc, suffix=f" ({k + 1} of 8 shown)")
+    zd = P["collar_h"] + P["wh_frame"][1] + P["door_angle"][0]
+    shared += [q for q in site_rope(P, to_z=zd - 60.0)]
+    for q in shared:
+        q["bom"] = None
+    parts = shared + _placed(OB.bailer(P), Pos(*BAILER_STOWED)) + OB.jerk_and_fairlead(P)
+    return parts
+
+
+def components(option=CHOSEN):
+    P = PARAMS
+    parts = {"A": option_a_parts, "B": option_b_parts}[option](P)
+    return parts + site_context(P)
+
+
+def _allowed():
+    import skg_detail as SD
+    return SD.ALLOWED + [("Closing line wound", "Weld, winding drum"), ("Closing line in the grab", "Closing line, 8 mm"),
+                         ("Closing line, 8 mm", "Closing line wound"), ("Closing line", "Winding drum"), ("Closing line", "Head sheave"), ("Closing line", "Lead sheave"),
+                         ("Closing line", "Fairlead"), ("Closing line", "Jerk bar"), ("Weld, bailer", "Bailer"),
+                         ("Weld, jerk bar", "Jerk bar"), ("Weld, fairlead", "Fairlead")]
+
+
+ALLOWED_CONTACTS = _allowed()
+
+
+def masses_detailed(P=PARAMS):
+    """kg per component key from the detailed parts (option A)."""
+    import skg_detail as SD
+    import cad_parts as cp
+    m = {}
+    for grp in (SD.capstan, SD.lead, SD.grab, SD.scraper, SD.wellhead):
+        for p in grp(P):
+            m[p["key"]] = m.get(p["key"], 0.0) + cp.mass_kg(p)
+    m["saddle"] = sum(cp.mass_kg(p) for p in SD.saddle(P))
+    so, spd, sw, sb = P["sheave"]
+    import skg_parts as sp
+    m["hs_sheave"] = sp.sheave(so * 2, spd * 2, sw, sb, P["rope_d"], (0, 0, 0), (1, 0, 0)).volume * 1e-9 * cp.MATERIALS["zinc_plated"][2]
+    return m
+
+
+def detail_dicts(P=PARAMS):
+    """Detailed parts grouped by component key, in the frames of capstan_parts(), lead_parts(), grab_parts(),
+    scraper_parts(), wellhead_parts() and saddle_part(): for the build plan pictures and drawings."""
+    import skg_detail as SD
+    out = []
+    for grp in (SD.capstan, SD.lead, SD.grab, SD.scraper, SD.wellhead):
+        d = {}
+        for p in grp(P):
+            if p["key"] in ("rope",) and grp is not SD.grab:
+                continue
+            d.setdefault(p["key"], []).append(p["shape"])
+        out.append({k: Compound(v) for k, v in d.items()})
+    out.append(Compound([p["shape"] for p in SD.saddle(P)]))
+    return out
+
+
+def site_dicts_A(P=PARAMS):
+    """Option A's detailed parts at the well head grouped by component key (site frame), for the concept media."""
+    d = {}
+    for p in option_a_parts(P):
+        k = p.get("key") or "misc"
+        if p["name"].startswith("Ballast saddle"):
+            k = "saddles"
+        d.setdefault(k, []).append(p["shape"])
+    return {k: Compound(v) for k, v in d.items()}
+
+
+def export_stl_files(P=PARAMS, tol=0.15):
+    """STL of each group of the chosen option from the detailed parts (0.15 mm chord, STANDARDS section 24)."""
+    import skg_detail as SD
+    (ROOT / "cad" / "stl").mkdir(parents=True, exist_ok=True)
+    for name, grp in (("capstan", SD.capstan), ("lead", SD.lead), ("grab", SD.grab), ("scraper", SD.scraper),
+                      ("wellhead", SD.wellhead), ("saddle", SD.saddle)):
+        shapes = [p["shape"] for p in grp(P)]
+        export_stl(Compound(shapes), str(ROOT / "cad" / "stl" / f"sinkgrab-{name}.stl"), tolerance=tol, angular_tolerance=0.2)
+        export_step(Compound(shapes), str(ROOT / "cad" / "step" / f"sinkgrab-{name}.step"))
+    print("exported STL (0.15 mm) and group STEP from the detailed parts")
+
+
 if __name__ == "__main__":
     D = derived()
     print({k: (round(v, 2) if isinstance(v, float) else v) for k, v in D.items()})
@@ -1126,4 +1368,4 @@ if __name__ == "__main__":
     for k, v in sorted(masses().items()):
         print(f"{k:16s} {v:6.2f} kg")
     if "--check" not in sys.argv:
-        export()
+        export_stl_files()

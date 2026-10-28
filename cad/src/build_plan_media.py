@@ -7,7 +7,8 @@ pictures and the model never disagree:
     cad/drawings/SKG-DWG-101 to 117       making sketches for the made components
     docs/05-build-plan/joint-NN.png       close-ups of the joints that need explaining
     docs/05-build-plan/step-NN.png        one picture per assembly step
-Uses .kit/build_views.py. BUILD PLAN ILLUSTRATION, PLAN NOT YET BUILT.
+Uses .kit/build_views.py. Since kit 1.9.1 every picture is drawn from the detailed D3 parts (every bolt,
+pin, split pin and weld bead) grouped by component (model.detail_dicts()). BUILD PLAN ILLUSTRATION, PLAN NOT YET BUILT.
 """
 import math
 import os
@@ -19,33 +20,50 @@ sys.path[:0] = [str(ROOT / ".kit"), str(ROOT / "cad" / "src")]
 import build_views as bv  # noqa: E402
 from build_views import Part  # noqa: E402
 from build123d import Compound, Pos, Rot  # noqa: E402
-from model import (PARAMS as P, derived, capstan_parts, lead_parts, grab_parts, scraper_parts,  # noqa: E402
-                   wellhead_parts, saddle_part, tripod_context, well_context, head_sheave, rope_shape,
-                   bx, zcyl, annulus_z)
+from model import (PARAMS as P, derived, detail_dicts, tripod_context, well_context, head_sheave,  # noqa: E402
+                   site_rope, bx, zcyl, annulus_z)
 
 OUT = ROOT / "docs" / "05-build-plan"
 DWG = ROOT / "cad" / "drawings"
 DATE = "2026-10-03"
 D = derived(P)
-CAP = capstan_parts(P)
-LEAD = lead_parts(P)
-GRAB = grab_parts(P)
-SCR = scraper_parts(P)
-WH = wellhead_parts(P)
-SAD = saddle_part(P)
+
+
+class Grp(Compound):
+    """A group of detailed parts; '+' collects groups into one compound instead of fusing them."""
+    def __add__(self, other):
+        kids = list(self) if hasattr(self, "__iter__") else [self]
+        return Grp(kids + [other])
+
+
+def _grp(d):
+    return {k: Grp([v]) for k, v in d.items()}
+
+
+_CAP, _LEAD, _GRAB, _SCR, _WH, _SAD = detail_dicts(P)
+CAP, LEAD, GRAB, SCR, WH = _grp(_CAP), _grp(_LEAD), _grp(_GRAB), _grp(_SCR), _grp(_WH)
+SAD = Grp([_SAD])
 GREY = "#D1D5DB"
 # making sketches revised after their first issue (P1 is the first issue, 2026-10-03)
 _P1 = ("P1", "Making sketch for the prototype build plan", DATE, "AC")
-REV = {"SKG-DWG-112": [_P1, ("P2", "SKG-DDR-004: stop collar replaced by a cross hole for the sleeve pin", "2026-10-04", "AC")],
-       "SKG-DWG-113": [_P1, ("P2", "SKG-DDR-004: 340 mm slotted sleeve and 12 mm cross pin", "2026-10-04", "AC")]}
+_K19 = ("2026-10-24", "AC")
+REV = {"SKG-DWG-112": [_P1, ("P2", "SKG-DDR-004: stop collar replaced by a cross hole for the sleeve pin", "2026-10-04", "AC"),
+                       ("P3", "Kit 1.9.1: detailed model; arm pivots at 60 mm (SKG-DEC-001 K6)", *_K19)],
+       "SKG-DWG-113": [_P1, ("P2", "SKG-DDR-004: 340 mm slotted sleeve and 12 mm cross pin", "2026-10-04", "AC"),
+                       ("P3", "Kit 1.9.1: detailed model; pivots at 60, closed eyes, butt-welded blades (K6, K9, K15)", *_K19)]}
+_P2 = ("P2", "Kit 1.9.1: redrawn from the detailed model (SKG-DEC-001 K1 to K21)", *_K19)
+_O4 = ("2026-10-25", "AC")
+REV["SKG-DWG-103"] = [_P1, _P2, ("P3", "SKG-DEC-001 O4: friction slip clutch in place of the shear pin hub", *_O4)]
+REV["SKG-DWG-104"] = [_P1, _P2, ("P3", "SKG-DEC-001 O4: guard widened to enclose the slip clutch", *_O4)]
+REV["SKG-DWG-111"] = [_P1, _P2, ("P3", "SKG-DEC-001 O4: load indicator in place of the shear link", *_O4)]
 
 COL = {"frame": "#0F766E", "drum": "#C2410C", "drum_bearings": "#374151", "crank_bearings": "#4B5563",
-       "crank_shaft": "#6B7280", "small_sprocket": "#B45309", "shear_pin": "#DC2626", "chain": "#78716C",
+       "crank_shaft": "#6B7280", "small_sprocket": "#B45309", "clutch": "#DC2626", "chain": "#78716C",
        "guard": "#CA8A04", "cranks": "#111827", "pawl": "#1D4ED8", "brake": "#9333EA", "stakes": "#57534E",
        "cradle": "#0E7490", "lead_sheave": "#D4A017", "lead_axle": "#374151", "drawbar": "#64748B", "draw_pins": "#111827",
        "head": "#2563EB", "ballast": "#1E3A8A", "tie_rods": "#475569", "shell_pins": "#111827", "shell_a": "#EA580C",
        "shell_b": "#F59E0B", "crosshead": "#15803D", "hinge_pin": "#111827", "cross_sheave": "#D4A017",
-       "cross_axle": "#374151", "upper_sheave": "#D4A017", "upper_axle": "#374151", "shear_link": "#DC2626", "link_pin": "#B91C1C", "scraper_pole": "#0369A1",
+       "cross_axle": "#374151", "upper_sheave": "#D4A017", "upper_axle": "#374151", "load_link": "#DC2626", "scraper_pole": "#0369A1",
        "arms": "#E11D48", "arm_pins": "#111827", "sleeve": "#7C3AED", "sleeve_pins": "#111827", "cross_pin": "#111827", "struts": "#A16207",
        "pole_section": "#0284C7", "tbar": "#1E40AF", "wh_frame": "#0F766E", "doors": "#9CA3AF", "saddle": "#57534E",
        "rope": "#E11D48", "hs_sheave": "#D4A017"}
@@ -75,7 +93,7 @@ def overview():
         ("Capstan frame", moved(CAP["frame"], 0, cy, 0), "frame", (0, 0, 0)),
         ("Winding drum with brake drum and ratchet", moved(CAP["drum"], 0, cy, 0), "drum", (0, 0, 650)),
         ("Pawl", moved(CAP["pawl"], 0, cy, 0), "pawl", (350, 0, 650)),
-        ("Crank shaft, sprocket hub and cranks", moved(CAP["crank_shaft"] + CAP["small_sprocket"] + CAP["cranks"], 0, cy, 0), "crank_shaft", (0, 0, 650)),
+        ("Crank shaft, slip clutch and cranks", moved(CAP["crank_shaft"] + CAP["small_sprocket"] + CAP["clutch"] + CAP["cranks"], 0, cy, 0), "crank_shaft", (0, 0, 650)),
         ("Chain guard", moved(CAP["guard"], 0, cy, 0), "guard", (-550, 0, 350)),
         ("Band brake and weighted lever", moved(CAP["brake"], 0, cy, 0), "brake", (500, -250, 0)),
         ("Ground stakes (4)", moved(CAP["stakes"] & bx(-2000, 2000, -9000, 9000, 0, 200), 0, cy, 0), "stakes", (0, 0, -100)),
@@ -86,7 +104,7 @@ def overview():
         ("Grab shell A", moved(GRAB["shell_a"], gx, 0, 300), "shell_a", (250, 0, 0)),
         ("Grab shell B", moved(GRAB["shell_b"], gx, 0, 300), "shell_b", (-250, 0, 0)),
         ("Crosshead and hinge pin", moved(GRAB["crosshead"] + GRAB["hinge_pin"], gx, 0, 300), "crosshead", (0, 0, 120)),
-        ("Shear link", moved(GRAB["shear_link"], gx, 0, 300), "shear_link", (300, 0, 300)),
+        ("Load indicator", moved(GRAB["load_link"], gx, 0, 300), "load_link", (300, 0, 300)),
         ("Scraper head (pole, hub, centralizer)", moved(SCR["scraper_pole"], sx, 0, 450), "scraper_pole", (0, 0, 0)),
         ("Scraper arms and struts", moved(SCR["arms"] + SCR["struts"], sx, 0, 450), "arms", (0, 0, 250)),
         ("Slotted sleeve, foot and cross pin", moved(SCR["sleeve"] + SCR["cross_pin"], sx, 0, 450), "sleeve", (0, 0, -150)),
@@ -101,20 +119,25 @@ def overview():
     ]
     parts = [part(n, s, k, e) for n, s, k, e in items]
     bv.overview(parts, OUT / "overview.png", "SinkGrab prototype: every component in build order",
-                subtitle="Made parts first (1 to 23), then bought parts (24 to 26); ropes, pins and fasteners not shown",
+                subtitle="Made parts first (1 to 23), then bought parts (24 to 26); pins and fasteners shown with the parts they join",
                 key=True, size=(12, 8.5))
     print("overview")
 
 
 # ----------------------------------------------------------------- making sketches
+def _hlr_safe(shape):
+    from skg_parts import hlr_safe
+    return hlr_safe(shape)
+
+
 def sheets():
     cap_all = [Part(k, v, GREY) for k, v in CAP.items() if k != "stakes"]
     grab_all = [Part(k, v, GREY) for k, v in GRAB.items()]
     scr_all = [Part(k, v, GREY) for k, v in SCR.items()]
     lead_all = [Part(k, v, GREY) for k, v in LEAD.items()]
     wh_all = [Part(k, v, GREY) for k, v in WH.items()]
-    OWN = {"SKG-DWG-103": {"crank_shaft", "small_sprocket", "cranks"}, "SKG-DWG-105": {"pawl", "brake"},
-           "SKG-DWG-110": {"head", "ballast"}, "SKG-DWG-111": {"crosshead", "tie_rods", "shear_link", "hinge_pin"},
+    OWN = {"SKG-DWG-103": {"crank_shaft", "small_sprocket", "clutch", "cranks"}, "SKG-DWG-105": {"pawl", "brake"},
+           "SKG-DWG-110": {"head", "ballast"}, "SKG-DWG-111": {"crosshead", "tie_rods", "load_link", "hinge_pin"},
            "SKG-DWG-113": {"arms", "struts", "sleeve", "cross_pin"}, "SKG-DWG-114": {"pole_section", "tbar"},
            "SKG-DWG-116": {"doors"}, "SKG-DWG-109": {"shell_a"}}
     rw = P["ring"][1]
@@ -124,11 +147,13 @@ def sheets():
          "40 x 40 x 2 SHS; 8 mm plate; 33.7 x 3.2 tube; 12 mm bar",
          ["Two side frames 430 apart (bearing planes at -200 and +230 from the drum centre)",
           "Each: base rail 660, post 150 behind the drum axis up to the top plate (805 to top)",
-          "Two pad posts 60 either side of the drum axis; pad 180 x 50 x 8, top at 169",
+          "Pad posts 60 either side of the axis; pad 180 x 50 x 8 on them, top at 177",
+          "Two M14 bolts pushed up through each pad before welding; heads inside the posts",
           "Front brace from the rail front to the post at 640; rear brace to the post at 560",
           "Front and rear cross rails; top tie at 700; brake anchor bar 125 behind the axis",
           "Drawbar clevis: two 8 mm plates on the front rail, 21 mm hole 40 up, 32 apart",
-          "Pawl bracket under the +X front brace, 12 mm pin; brake post and lever plate",
+          "Pawl bracket under the +X front brace, reamed for the 12 mm pin; two brake anchor posts",
+          "Brake lever plate outside the +X rail, pivot 67 up; guard clip angles on the -X post",
           "Four stake tubes 33.7 x 80, 200 either side of the drum axis, outside the rails",
           "Tack on a flat table; diagonals within 3 mm; pads level and in line within 1 mm"]),
         ("SKG-DWG-102", "Winding drum: making sketch", CAP["drum"], "drum", cap_all,
@@ -139,24 +164,25 @@ def sheets():
           "Ratchet wheel 20 teeth, 200 OD, 168 root, 8 mm, 8 mm outboard of the brake drum",
           "Shaft 30 x 549 through all; weld in short stitches, turning the drum",
           "48-tooth sprocket on a hub at the -X end, outboard of the bearing",
-          "Rope clamp with a U-bolt on the -X flange",
+          "Rope clamp: tapped boss, strap and two M8 bolts on the -X flange",
           "Check: flanges run true within 1.5 mm; brake drum within 0.5 mm"]),
-        ("SKG-DWG-103", "Crank shaft, sprocket hub and cranks: making sketch",
-         CAP["crank_shaft"] + CAP["small_sprocket"] + CAP["cranks"], "crank_shaft", cap_all,
-         "25 mm S355 shaft; 36 mm tube hub; 12 mm plate arms; 32 mm handle tubes",
-         ["Shaft 25 x 633; square ends 20 across flats, 40 long, for the cranks",
-          "Hub 26 long, bored to slide on the shaft; 12-tooth sprocket welded to it",
-          "Drill hub and shaft together for the 3 mm shear pin, 12 from the sprocket face",
+        ("SKG-DWG-103", "Crank shaft, slip clutch and cranks: making sketch",
+         CAP["crank_shaft"] + CAP["small_sprocket"] + CAP["clutch"] + CAP["cranks"], "crank_shaft", cap_all,
+         "25 mm S355 shaft; 36 mm tube sleeve; 6 and 8 mm plate discs; 12 mm plate arms",
+         ["Shaft 25 x 654; square ends 20 across flats; 8 x 4 keyway; M25 x 1.5 thread",
+          "Sleeve 36 x 40 runs on the shaft: sprocket and two 84 discs, 7 clear of it",
+          "Inner flange 84 x 8 welded to the shaft; keyed pressure plate; facings 84 x 44",
+          "Two disc springs 50 x 25.4 x 2.0, MB5 tab washer, KM5 locknut; set on CalRig",
           "Crank arms 250 between centres with a square socket and a ball-lock pin",
-          "Handles turn on M12 bolts: -X 32 x 120; +X 32 x 240 for two hands",
+          "Handles turn on 20 mm stub axles welded to the arms: -X 120, +X 240 long",
           "Arms 180 deg apart; the long handle lets a third person join the hoist",
-          "Check: hub turns freely with the pin out, locks with it in"]),
+          "Check: slips at about 34 N m set on CalRig; locknut paint-marked"]),
         ("SKG-DWG-104", "Chain guard: making sketch", CAP["guard"], "guard", cap_all,
          "1.5 mm steel sheet",
          ["Two side sheets cut to the outline: 22 clear of the big sprocket, 30 of the small",
-          "Band 46 wide round the outline, stitch welded or riveted",
+          "Band 78 wide round the outline (encloses the slip clutch), stitch welded or riveted",
           "Holes 60 (drum hub) and 44 (crank shaft), clear of both",
-          "Two M6 screws into the frame tabs at 560 and 780",
+          "Two M6 screws into the clip angles at 560 and 780; nuts welded inside",
           "Check: no finger reaches the chain with the guard on"]),
         ("SKG-DWG-105", "Pawl and band brake with weighted lever: making sketch",
          CAP["pawl"] + CAP["brake"], "brake", cap_all,
@@ -164,8 +190,8 @@ def sheets():
          ["Pawl: 12 mm pivot hole, nose radius 3, 150 from the drum axis at the pivot",
           "Pawl stops the drum turning to pay out; flip it up to lower",
           "Band 270 deg round the brake drum, lining bonded on, 6 mm thick in all",
-          "Anchor end pinned to the post behind the drum (the tight end when lowering)",
-          "Live end by a 25 x 6 link to the lever, 60 from the pivot",
+          "Anchor eye pinned between two posts behind the drum (the tight end when lowering)",
+          "Live end: 25 x 6 link on the tangent to an arm 60 above the lever pivot",
           "Lever 650 long, 6 kg block at the end: brake on when let go",
           "Check: lever lifts 30 mm to free the drum; 300 N m holding"]),
         ("SKG-DWG-106", "Ground stake: making sketch",
@@ -178,8 +204,8 @@ def sheets():
         ("SKG-DWG-107", "Foot cradle: making sketch", LEAD["cradle"], "cradle", lead_all,
          "10 mm plate; 4 mm flat rim; 10 mm clamp bars; 8 mm cheeks",
          ["Base 320 wide under the HatchSide leg A foot, tongue to the sheave",
-          "Rim 30 high on three sides; the foot plate drops in",
-          "Two clamp bars 260 x 40 x 10 across the foot plate, four M12 bolts",
+          "Rim 18 high on three sides, flush with the foot plate",
+          "Two clamp bars 260 x 40 x 10 on top of the foot plate, four welded M12 studs",
           "Cheeks 8 mm, 30 apart, 20.5 mm axle hole 185 up, 260 beyond the foot centre",
           "Drawbar clevis: two 8 mm plates, 21 mm hole 40 up, 160 beyond the sheave",
           "Check: the foot sits flat; sheave turns between the cheeks"]),
@@ -204,31 +230,31 @@ def sheets():
          GRAB["head"] + GRAB["ballast"], "head", grab_all,
          "6 mm plate box; 25 mm S355 bar; 30 mm tube; 6, 12 and 16 mm plate; 20 mm axle",
          ["Box 300 x 120 x 40 from 6 mm plate, welded all round",
-          "Two head pins 25 dia through the box ends at +/- 120, 418 long",
+          "Two head pins 25 dia through the box sides at +/- 120, 19 above its bottom",
           "Rope guide tube 30 OD, 14 bore, 65 from the centre on the -X side",
           "Two 6 mm sheave cheeks under the box at +65, 30 apart (3:1 tackle)",
           "Axle hole 20.5, 85 below the box, 65 in from its long side",
           "Upper sheave turns across the box; line in at the centre, out 130 aside",
           "Recovery-line eye on top, 20 mm hole",
-          "Ballast plates 190 x 110 x 16 bolted to both faces (M10)",
-          "Check: 13.5 kg with the plates and cheeks"]),
-        ("SKG-DWG-111", "Crosshead, tie rods and shear link: making sketch",
-         GRAB["crosshead"] + GRAB["tie_rods"] + GRAB["shear_link"] + GRAB["hinge_pin"], "crosshead", grab_all,
-         "10 mm plate; 30 x 10 flat; 6 mm plate; 30 mm bar; 16 mm pin",
+          "Ballast plates 190 x 110 x 16: two M10 bolts at +/- 40 through spacer tubes",
+          "Check: 14.3 kg with the plates, cheeks, pins and spacers"]),
+        ("SKG-DWG-111", "Crosshead, tie rods and load indicator: making sketch",
+         GRAB["crosshead"] + GRAB["tie_rods"] + GRAB["load_link"] + GRAB["hinge_pin"], "crosshead", grab_all,
+         "10 mm plate; 30 x 10 flat; 6 and 5 mm plate; 30 mm bar; 16 mm pin; M8 rod",
          ["Crosshead plates 10 mm, 50 apart: hinge hole 30.5, axle hole 20.5 120 above",
-          "Hinge pin 30 x 404, R-clips both ends; sheave on a 20 mm axle",
-          "Tie rods 30 x 10, 420 between 20.5 and 25.5 holes; two per shell",
+          "Hinge pin 30 x 406; two set collars hold the crosshead central",
+          "Tie rods 30 x 10 x 470, closed eyes, 420 between 20.5 and 25.5 holes",
           "Dead end on one plate: stub, arm 45 deep and lug, hole 197 up, 130 aside",
           "Arm kept above 140 so the open shells clear it",
-          "Shear link: two 6 mm plates 87 x 30, 16 mm pin at the bottom",
-          "Calibrated link pin about 1.9 mm, 62 above the lug pin",
+          "Load indicator: two 6 mm straps 30 x 72 on a 16 x 42 pin, housing plate on top",
+          "M8 rod, 14 disc springs 18 x 9.2 x 1.0 under the housing; fork pin 74 above",
           "Check: crosshead turns on the pin; rods swing freely"]),
         ("SKG-DWG-112", "Scraper head (pole, hub and centralizer): making sketch",
          SCR["scraper_pole"], "scraper_pole", scr_all,
          "42.4 x 2.6 tube; 70 mm tube hub; 8 mm plate lugs; 40 x 8 flat; 10 mm skids",
          ["Bottom pole 42.4 x 2.6, 1,420 long, solid 50 mm spike end; no stop collar",
           "12.5 cross hole 140 above the tip, square to the arm lugs, for the sleeve pin",
-          "Hub 70 OD x 90 at 80 above the toe line; two pairs of lugs, 16.5 holes at 45",
+          "Hub 70 OD x 90 at 80 above the toe line; two pairs of lugs, 16.5 holes at 60",
           "Centralizer collar at 700 up; three arms 120 deg apart; skids at 440 radius",
           "Skid arms drilled for 340, 440 and 590 radius (0.8, 1.0 and 1.3 m rings)",
           "Top end takes the next section's spigot, 13 mm cross hole",
@@ -236,14 +262,14 @@ def sheets():
         ("SKG-DWG-113", "Scraper arms, struts and sleeve: making sketch",
          SCR["arms"] + SCR["struts"] + SCR["sleeve"] + SCR["cross_pin"], "arms", scr_all,
          "50 x 10 flat; 10 mm wear plate; 30 x 6 flat; 54 mm tube; 10 mm plate; 12 mm bar",
-         ["Arms 50 x 10, 540 from pivot to toe; toe plate 100 x 80 x 10",
-          "Toe blade 100 x 35 x 10 at the cutting level, 25 beyond the toe plate",
+         ["Arms 50 x 10, 525 from pivot to toe plate, closed eye R18; toe plate 100 x 80 x 10",
+          "Toe blade 100 x 25 x 10 butt-welded at the cutting level, 25 beyond the toe plate",
           "Blades reach 615 radius open: 40 beyond a 1.0 m ring's outer face",
-          "Struts 30 x 6 in pairs, 398 between 12.5 holes",
+          "Struts 30 x 6 in pairs, 403 between 12.5 holes, rounded ends",
           "Sleeve 54 x 340; slot 13 x 312 each side, 14 up; foot plate 250 dia",
           "Strut lugs 100 up; cross pin 12 x 70 through slots and pole, R-clip",
-          "Sleeve slides 300 on the pin: blades fold to 389 radius",
-          "Longer arm pair (660) for 1.2 to 1.3 m rings",
+          "Sleeve slides 300 on the pin: blades fold to 387 radius",
+          "Longer arm pair (645) for 1.2 to 1.3 m rings",
           "Check: arms open and fold freely by hand"]),
         ("SKG-DWG-114", "Pole section and T-bar: making sketch",
          Pos(0, 0, -P["head_len"]) * (SCR["pole_section"] + SCR["tbar"]), "pole_section", scr_all,
@@ -256,14 +282,14 @@ def sheets():
         ("SKG-DWG-115", "Well-head frame: making sketch", WH["wh_frame"], "wh_frame", wh_all,
          "50 x 50 x 5 angle; 6 mm plate; 24 mm tube knuckles",
          ["Square opening 1,360, horizontal legs on the collar, vertical legs inside",
-          "Made in two halves, bolted at two corners with M12",
+          "Two halves joined at two corners by cleats and four M12 bolts",
           "Four datum brackets 6 mm with 10 mm holes at 537 radius",
           "Four hinge knuckles on the +Y and -Y sides, 1,000 apart",
           "Check: sits on the collar without rocking; datum holes square within 3 mm"]),
         ("SKG-DWG-116", "Folding door: making sketch",
          WH["doors"] & bx(-2000, 2000, 0, 2000, 0, 2000), "doors", wh_all,
          "40 x 40 x 4 angle; expanded steel mesh; 16 mm bar pins",
-         ["Frame 1,364 x 680 from 40 x 40 x 4 angle, mesh welded inside",
+         ["Frame 1,364 x 680 from 40 x 40 x 4 angle, mesh on the horizontal legs",
           "Semicircular notch 32 radius at the middle of the meeting edge",
           "6 mm doubler round the notch; two doors make a 64 mm pole hole",
           "Two hinge pins 16 on the outer edge, into the frame knuckles",
@@ -286,10 +312,11 @@ def sheets():
             nb = [n for n in nb if n.name != "doors"] + [Part("other door", WH["doors"] & bx(-2000, 2000, -2000, 0, 0, 2000), GREY)]
         else:
             nb = [n for n in nb if n.name not in own]
-        rev = REV.get(dwg)
+        rev = REV.get(dwg) or [_P1, _P2]
+        vs = _hlr_safe(shape) if dwg == "SKG-DWG-111" else None
         if rev:
             bv.component_sheet(Part(title, shape, COL[key]), nb[:14], "SinkGrab", dwg, title, mat, notes, rev[-1][2],
-                               rev=rev[-1][0], revisions=rev, out_dir=str(DWG))
+                               rev=rev[-1][0], revisions=rev, out_dir=str(DWG), view_shape=vs)
         else:
             bv.component_sheet(Part(title, shape, COL[key]), nb[:14], "SinkGrab", dwg, title, mat, notes, DATE, out_dir=str(DWG))
         print("sheet", dwg)
@@ -304,14 +331,14 @@ def joints():
     bv.joint([part("Bearing pad on the frame", crop(CAP["frame"], *r), "frame"),
               part("Drum bearing, 2 x M14", crop(CAP["drum_bearings"], *r), "drum_bearings"),
               part("Drum shaft", crop(CAP["drum"], *r), "drum")],
-             OUT / "joint-01.png", "Joint 1: drum bearing on its pad", "Two M14 bolts through the pad; set screws lock the shaft")
-    # 2 shear pin hub
+             OUT / "joint-01.png", "Joint 1: drum bearing on its pad", "Captive M14 bolts stand up through the pad; set screws lock the shaft")
+    # 2 slip clutch on the crank shaft (SKG-DEC-001 O4)
     xs = D["x_spr"]
-    r2 = (xs - 30, xs + 40, yc - 60, yc + 60, hc - 60, hc + 60)
+    r2 = (xs - 50, xs + 40, yc - 60, yc + 60, hc - 60, hc + 60)
     bv.joint([part("Crank shaft", crop(CAP["crank_shaft"], *r2), "crank_shaft"),
-              part("Small sprocket on its hub", crop(CAP["small_sprocket"], *r2), "small_sprocket"),
-              part("3 mm shear pin", CAP["shear_pin"], "shear_pin")],
-             OUT / "joint-02.png", "Joint 2: shear pin through the sprocket hub", "Cut through the shaft; the hub turns on the shaft and only the pin drives it", cut="+Y")
+              part("Sprocket and driven discs on their sleeve", crop(CAP["small_sprocket"], *r2), "small_sprocket"),
+              part("Facings, flange, pressure plate, springs, KM5 nut", CAP["clutch"], "clutch")],
+             OUT / "joint-02.png", "Joint 2: slip clutch on the crank shaft", "Cut through the shaft; the sprocket's discs run between two facings clamped by disc springs", cut="+Y")
     # 3 ratchet and pawl
     r3 = (D["x_ratchet"][0] - 5, D["x_ratchet"][1] + 40, yd - 120, yd + 120, hd - 40, hd + 230)
     bv.joint([part("Ratchet wheel on the drum shaft", crop(CAP["drum"], *r3), "drum"),
@@ -323,7 +350,7 @@ def joints():
     bv.joint([part("Brake drum", crop(CAP["drum"], D["x_brake"][0], D["x_brake"][1], yd - 200, yd + 200, 0, 500), "drum"),
               part("Band, link, lever and weight", CAP["brake"], "brake"),
               part("Anchor post and lever plate", crop(CAP["frame"], *r4), "frame")],
-             OUT / "joint-04.png", "Joint 4: weighted band brake", "Lift the lever to lower; let go and the weight sets the brake", azim=20, elev=18)
+             OUT / "joint-04.png", "Joint 4: weighted band brake", "Link on an arm above the pivot: the falling weight pulls the band tight", azim=20, elev=18)
     # 5 drawbar clevis at the capstan
     yf = yd + P["rail_half"] + 40
     r5 = (-80, 80, yf - 90, yf + 160, 0, 100)
@@ -355,18 +382,17 @@ def joints():
               part("Tie rod", crop(GRAB["tie_rods"], *r8), "tie_rods"),
               part("20 mm pin", crop(GRAB["shell_pins"], *r8), "shell_pins")],
              OUT / "joint-08.png", "Joint 8: tie rod on the shell lug", "Pin through the rod and lug, R-clip outside", azim=-40, elev=20)
-    # 9 3:1 tackle: upper sheave in the head and shear link on the crosshead dead end
+    # 9 3:1 tackle: upper sheave in the head and load indicator on the crosshead dead end
     zh = D["head_pin_z"]
     r9 = (-20, 110, -40, 175, 100, zh - 10)
     bv.joint([part("Head cheeks", crop(GRAB["head"], *r9), "head"),
-              part("Upper sheave", GRAB["upper_sheave"], "upper_sheave"),
-              part("Upper sheave axle", GRAB["upper_axle"], "upper_axle"),
+              part("Upper sheave", crop(GRAB["upper_sheave"], *r9), "upper_sheave"),
+              part("Upper sheave axle", crop(GRAB["upper_axle"], *r9), "upper_axle"),
               part("Crosshead and dead-end lug", crop(GRAB["crosshead"], *r9), "crosshead"),
               part("Crosshead sheave", crop(GRAB["cross_sheave"], *r9), "cross_sheave"),
-              part("Shear link plates", GRAB["shear_link"], "shear_link"),
-              part("Calibrated link pin", GRAB["link_pin"], "link_pin")],
-             OUT / "joint-09.png", "Joint 9: upper sheave and shear link (3:1 tackle)",
-             "Line up from the crosshead sheave, over the upper sheave, down to the link pin", azim=-40, elev=18)
+              part("Load indicator", crop(GRAB["load_link"], *r9), "load_link")],
+             OUT / "joint-09.png", "Joint 9: upper sheave and load indicator (3:1 tackle)",
+             "Line up from the crosshead sheave, over the upper sheave, down to the indicator's fork", azim=-40, elev=18)
     # 10 scraper linkage
     r10 = (-60, 420, -60, 60, -340, 140)
     bv.joint([part("Pole and hub", crop(SCR["scraper_pole"], *r10), "scraper_pole"),
@@ -417,16 +443,16 @@ def steps():
     g = lambda k, nm, e=(0, 0, 0), src=CAP: Part(nm, src[k], COL[k], None, e)  # noqa: E731
     fr, dr = g("frame", "Frame"), g("drum", "Drum")
     db, cb = g("drum_bearings", "Drum bearings"), g("crank_bearings", "Crank bearings")
-    cs, ss, sp = g("crank_shaft", "Crank shaft"), g("small_sprocket", "Sprocket hub"), g("shear_pin", "Shear pin")
+    cs, ss, sp = g("crank_shaft", "Crank shaft"), g("small_sprocket", "Sprocket and discs"), g("clutch", "Slip clutch")
     ch, gd, ck, pw, bk = g("chain", "Chain"), g("guard", "Guard"), g("cranks", "Cranks"), g("pawl", "Pawl"), g("brake", "Brake")
 
     def mv(p, e):
         return Part(p.name, p.shape, p.color, None, e)
     go([dr], [mv(db, (0, 0, 0))], "Step 1: drum bearings onto the drum shaft", "Slide a UCP206 onto each shaft end, grease nipples up; set screws loose")
-    go([fr], [mv(dr, (0, 0, 450)), mv(db, (0, 0, 450))], "Step 2: lower the drum onto the pads", "Two people; two M14 bolts each; centre the drum; tighten the set screws")
-    go([fr, dr, db], [mv(cb, (0, 0, 350)), mv(cs, (0, 0, 350)), mv(ss, (-150, 0, 350))], "Step 3: crank shaft, hub and bearings onto the top plates", "Hub on the -X end; M12 bolts; sprockets in line within 1 mm")
+    go([fr], [mv(dr, (0, 0, 450)), mv(db, (0, 0, 450))], "Step 2: lower the drum onto the pads", "Two people; over the captive M14 bolts; centre the drum; set screws")
+    go([fr, dr, db], [mv(cb, (0, 0, 350)), mv(cs, (0, 0, 350)), mv(ss, (-150, 0, 350))], "Step 3: crank shaft, sprocket sleeve and bearings onto the top plates", "Sleeve on the -X end against the flange; M12 bolts; sprockets in line within 1 mm")
     go([fr, dr, db, cb, cs, ss], [mv(ch, (-250, 0, 0))], "Step 4: fit the chain", "Over both sprockets; connecting link clip closed end leading")
-    go([fr, dr, db, cb, cs, ss, ch], [mv(sp, (0, 0, 200))], "Step 5: fit the shear pin", "3 mm mild steel pin through hub and shaft, split pin; spares on the frame")
+    go([fr, dr, db, cb, cs, ss, ch], [mv(sp, (0, 0, 200))], "Step 5: assemble the slip clutch", "Key, pressure plate, two disc springs, tab washer, KM5 nut; set and paint-mark")
     go([fr, dr, db, cb, cs, ss, ch, sp], [mv(gd, (-300, 0, 0))], "Step 6: chain guard on", "Two M6 screws into the tabs; never turn the cranks with it off")
     go([fr, dr, db, cb, cs, ss, ch, sp, gd], [mv(pw, (250, 0, 150))], "Step 7: pawl on its pin", "Washer and R-clip; it drops into the ratchet by its own weight", azim=-30)
     go([fr, dr, db, cb, cs, ss, ch, sp, gd, pw], [mv(bk, (300, 0, 0))], "Step 8: band brake and weighted lever", "Pin the anchor end, then the link and lever; weight on", azim=-30)
@@ -444,8 +470,8 @@ def steps():
     go(base, [G("head", "Head", (0, 0, 350))], "Step 12: head onto the tie rods", "Head pins through the upper rod holes; R-clips")
     base += [G("head", "Head")]
     go(base, [G("ballast", "Ballast plates", (0, 0, 300)), G("upper_sheave", "Upper sheave", (250, 0, 0)), G("upper_axle", "Axle", (400, 0, 0)),
-              G("shear_link", "Shear link", (0, 250, 150)), G("link_pin", "Link pin", (0, 250, 150))],
-       "Step 13: ballast, upper sheave and shear link", "M10 bolts for the plates; sheave between the cheeks; link on the crosshead lug")
+              G("load_link", "Load indicator", (0, 250, 150))],
+       "Step 13: ballast, upper sheave and load indicator", "Trial assembly on a stand; never lift the assembled grab by hand")
     # scraper
     Sx = lambda k, nm, e=(0, 0, 0): Part(nm, SCR[k], COL[k], None, e)  # noqa: E731
     go([Sx("scraper_pole", "Scraper head")], [Sx("sleeve", "Sleeve and foot", (0, 0, -300)), Sx("arms", "Arms", (0, 0, 250)),
@@ -474,8 +500,9 @@ def steps():
        capstan + [Part("Drawbar", LEAD["drawbar"], COL["drawbar"], None, (0, 0, 300)),
                   Part("Stakes", CAP["stakes"] & bx(-2000, 2000, -9000, 9000, 0, 200), COL["stakes"], None, (0, 0, 300))],
        "Step 19: capstan and drawbar", "Drawbar pinned to both clevises, in line; stakes through the tubes", context=ctx_tri, size=(9, 6), azim=-35)
-    grab_site = [Part("Grab", Pos(0, 0, D["grab_hinge_site"]) * Rot(0, 0, 90) * Compound(list(GRAB.values())), COL["shell_a"], None, (0, 0, 150)),
-                 Part("Closing line", rope_shape(P), COL["rope"], None, (0, 0, 0)),
+    import model as _M
+    grab_site = [Part("Grab", _M.grab_loc() * Compound(list(_GRAB.values())), COL["shell_a"], None, (0, 0, 150)),
+                 Part("Closing line", Compound([q["shape"] for q in site_rope(P) if q["key"] == "rope"]), COL["rope"], None, (0, 0, 0)),
                  Part("Head sheave for 8 mm rope", head_sheave(P), COL["hs_sheave"], None, (0, 0, 300))]
     go([Part("Capstan, drawbar and cradle", Compound([CAP[k] for k in capk] + [LEAD["drawbar"], LEAD["cradle"], LEAD["lead_sheave"]]), GREY),
         Part("Frame and doors", WH["wh_frame"] + WH["doors"], GREY)], grab_site,

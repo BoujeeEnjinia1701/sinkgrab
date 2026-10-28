@@ -1,0 +1,35 @@
+{
+ "level": "D3",
+ "stage": "P3",
+ "hash": "03d0c6c320e748c5",
+ "options": {
+  "A": {
+   "title": "Rope grab and under-curb scraper",
+   "parts": 558,
+   "made_or_bought": 257,
+   "fasteners": 191,
+   "welds": 110,
+   "bare": [],
+   "bare_share": 0.0,
+   "interference": [],
+   "mass_kg": 363.5,
+   "step_files": 257
+  },
+  "B": {
+   "title": "Dart-valve bailer on a jerk line",
+   "parts": 380,
+   "made_or_bought": 189,
+   "fasteners": 105,
+   "welds": 86,
+   "bare": [],
+   "bare_share": 0.0,
+   "interference": [],
+   "mass_kg": 320.3,
+   "step_files": 0
+  }
+ },
+ "failures": [],
+ "warnings": [],
+ "passed": true,
+ "seconds": 113.1
+}

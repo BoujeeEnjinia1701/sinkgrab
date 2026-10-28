@@ -5,19 +5,36 @@ repo: BoujeeEnjinia1701/sinkgrab         # GitHub repository, shown on every dra
 area: Food and water security
 trl: 3                   # Technology Readiness Level, see .kit/STANDARDS.md section 9
 trl_target: 3
+stage: P3                # pipeline stage, STANDARDS section 19; set 2026-10-24 (kit 1.9.1 upgrade)
+stem_check: open         # SKG-STM-001 v0.3 after Amish's decisions of 2026-10-25 (SKG-DEC-001 O2, O4, O5): 33 within known science, 13 plausible to confirm at TRL 4, 2 fail with a fix proposed for option B only (OB5, OB6; waits on O1); six failed details fixed (K1 to K5, K22)
+concept_options: [A, B]  # SKG-OPT-001: A rope grab and under-curb scraper (current design, 167), B dart-valve bailer on a jerk line (153)
+# concept_chosen: left unset; A and B are within 10 %, so both are with Amish (SKG-DEC-001 O1, SKG-DDR-005); A stays the design of record
 design_state: constructable   # STANDARDS section 18; made constructable 2026-10-03 (SKG-DDR-002)
 trl_evidence:
   - docs/01-problem.md
+  - docs/01b-stem-check.md
   - docs/02-concept.md
+  - docs/02a-concept-options.md
+  - docs/03a-user-requirements.md
   - docs/03-requirements.md
+  - docs/03b-traceability.md
   - docs/decisions/0001-trl2-review-decisions.md
   - docs/decisions/0002-design-for-construction.md
   - docs/04-calcs/01-sizing.md
   - docs/04-calcs/sizing.py
+  - docs/04-calcs/stem_check.py
+  - docs/decisions/0005-concept-selection.md
+  - docs/decisions/0006-decisions-2026-10-25.md
   - cad/src/model.py
-  - cad/step/sinkgrab-assembly.step
+  - cad/src/skg_detail.py
+  - cad/src/skg_option_b.py
+  - cad/src/skg_parts.py
+  - cad/fidelity.json
+  - cad/step/A-assembly.step
+  - cad/step/B-assembly.step
   - cad/step/sinkgrab-grab.step
   - cad/step/sinkgrab-capstan.step
+  - cad/stl/sinkgrab-grab.stl
   - cad/drawings/SKG-DWG-001.svg
   - cad/drawings/SKG-DWG-001.pdf
   - cad/drawings/SKG-DWG-002.svg
@@ -27,6 +44,14 @@ trl_evidence:
   - docs/05-build-plan/overview.png
   - cad/src/build_plan_media.py
   - cad/src/product_model.py
+  - docs/07-regulatory.md
+  - docs/08-feasibility.md
+  - docs/09-risk.md
+  - docs/10-market.md
+  - docs/11-plan.md
+  - media/hero.png
+  - media/concept-blueprint.png
+  - media/model.glb
 shortlisted: false
 pitch: >-
   Deepens village wells under water with a rope grab and under-curb scraper, without divers or pumps.

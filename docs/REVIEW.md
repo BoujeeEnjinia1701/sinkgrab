@@ -1,5 +1,108 @@
 # Review note: SinkGrab
 
+## Session 2026-10-25: decisions
+
+Amish Chadha (owner), 2026-10-25 12:43 CT, after a report listing each repo's proposed decisions and recommendations: "i approve of your recommendations". Every open decision in SKG-DEC-001 that carried a recommendation is recorded as decided by Amish on 2026-10-25, with the option recommended; the record is `docs/decisions/0006-decisions-2026-10-25.md` (SKG-DDR-006), and the register is SKG-DEC-001 v0.6. Brief: `/home/claude/fleet/DECISIONS.md`.
+
+### Decisions now decided
+
+| # | Decision | Option |
+| --- | --- | --- |
+| O2 | Ring sinking (PR-001) | B: bentonite slurry fed down a pipe into the 40 mm overcut annulus, part of the method from the first trial, tried in the test pit first |
+| O3 | New requirements | A: PR-012 (air test with carbon dioxide) and PR-013 (soils) accepted as written |
+| O4 | Overload window and proof basis (PR-007) | C: friction slip clutch on the crank shaft and a peak-reading load indicator at the dead end replace the crank shear pin and the shear link; proof at 1.25 x the rated load |
+| O5 | Scraper turning force | "A if the well-head layout allows it, else B": the layout does not allow the 2.0 m T-bar, so B, four people at the 1.4 m T-bar |
+
+### What changed
+
+- **Slip clutch (O4).** `cad/src/model.py` (PARAMS `clutch`, `guard_out` 47, `guard_in` 31; part keys `clutch`, `load_link` in place of `shear_pin`, `shear_link`, `link_pin`) and `cad/src/skg_detail.py` (D3): two 6 mm driven discs 84 mm across welded to a 36 mm sleeve that carries the sprocket and runs on the shaft; woven facings 84 x 44 x 4 mm on an 8 mm inner flange welded to the shaft and on an 8 mm keyed pressure plate; key 8 x 7 x 8; two disc springs 50 x 25.4 x 2.0; MB5 tab washer and KM5 locknut on an M25 x 1.5 thread. Nominal slip 33.8 N m from a 1,464 N clamp (friction 0.35, mean radius 33.0 mm); capstan pull at slip 1,127 N (third layer, -5 %) to 1,472 N (first layer, +5 %), the tripod's rating. Steady full-grab pull at the capstan with 11 % sheave friction 1,068 N: margin 1.06 on the third layer, 1.14 on the second; at ±10 % the window closes (1,019 N). The chain guard widens 21 mm outboard and 11 mm inboard (band 78 mm); the crank shaft grows to 654 mm and the -X crank moves out 21 mm. Brake factor 2.42 (1.69 before), drawbar factor 27 (19), ratchet tooth 1,544 N (2,211 N); line factor 7.3 on the clutch's highest slip (5.1 on the crank pin).
+- **Load indicator (O4).** Two 6 mm straps on a 16 x 42 mm clevis pin with spacers, housing plate, M8 stainless rod through it with 14 disc springs 18 x 9.2 x 1.0 below, fork with an 8 mm pin and the thimble sleeve; O-ring tell-tale; about 2.8 mm of travel at 1.47 kN (catalogue values to confirm). Grab 52.7 kg (52.5 kg), working pull 1,058 N (1,056 N), lips about 700 N.
+- **Proof basis (O4).** PR-007 restated: proof at 1.25 x the rated load, the clutch's highest slip (150 kg): 188 kg, inside the HatchSide proof of 225 kg, clutch locked out for the test; clutch set and checked before each campaign. Applicable standard still to assess (SKG-REG-001 G1).
+- **Scraper crew (O5).** `docs/04-calcs/sizing.py` H10 checks the 2.0 m T-bar against the HatchSide legs: its ends (1,017 mm) clear the legs only below 801 mm above ground, against doors at 390 mm and 2 m of T-bar travel per pole section, so four people turn the 1.4 m T-bar: 71 N each at 0.65 m, 84 N each with the inner pair at 0.45 m (H9). No hardware change.
+- **Bentonite annulus (O2).** About 0.45 m3 of slurry over 3 m of sinking (I6); mixing drum, pump and feed pipe are trial kit, not BOM. The limit (1.66 kPa) is unchanged and no lubricated friction is claimed.
+- **BOM** (`bom/bom.csv`): line 4 USD 57 to 62 (keyway, thread, longer shaft, sleeve; estimate), line 5 USD 20 to 23 (wider guard; estimate), line 14 shear link USD 18 to load indicator USD 35 (estimate), line 24 shear pins USD 8 (20 x 0.40) to slip clutch USD 60 (estimate). Value-engineering target: USD 4,000. Estimated cost of the constructable design: USD 3,063 (USD 937 under the target); `budget_usd` unchanged.
+- **Calculations and checks.** SKG-CAL-001 v0.6 (`docs/04-calcs/01-sizing.md`: sections C, E, F, G, H, I, K, M, O and Table 1); `docs/04-calcs/results.csv`. STEM check SKG-STM-001 v0.3 (`docs/04-calcs/stem_check.py`, `stem_results.csv`, `docs/01b-stem-check.md`): S4 to S7, S10, S10a, S15, S16, S18, S21, E2, B4 and OB2 restated; now 33 within known science, 13 plausible to confirm at TRL 4, 2 failing (OB5, OB6, option B only, waiting on O1). OB6 stays failing: the annulus needs the overcut only option A cuts.
+- **Requirements and risk.** SKG-PRS-001 v0.8 (PR-001 at risk with the annulus, not met unaided; PR-007 restated, at risk; PR-012, PR-013 accepted); SKG-URS-001 v0.2; RTM regenerated. SKG-RSK-001 v0.2: R1 likelihood 5 to 4, R9 restated for the clutch window, R10 added (crew of four), H5 controls, FMEA F1 (load indicator, RPN 27), F3 (clutch tightened past its setting, RPN 30, now the highest) and F11 (clutch slips low, RPN 12); the shear pin's RPN 45 and 36 modes are gone. SKG-FEA-001 v0.2, SKG-REG-001 v0.2 (G1), SKG-OPT-001 v0.2 (cost and line limit; scores unchanged), SKG-MKT-001 v0.2, SKG-PLN-001 v0.2.
+- **Drawings and build plan.** SKG-BLD-001 v0.5 (`docs/05-build-plan.md`): sections 2, 3.4 (crank shaft, slip clutch and cranks), 3.7, 3.13 (load indicator), 3.20, steps 3, 5, 13, 15, 20, first checks (proof 188 kg, clutch setting, load indicator, daily slip check, bentonite annulus), safety stops 2, 6 and 9, section 7 (crew and slurry kit). Making sketches SKG-DWG-103, 104 and 111 to Rev P3, SKG-DWG-001 to Rev P5 and 002 to Rev P6; every build plan picture, joints 2 and 9 and steps 3, 5 and 13 redrawn; concept media regenerated. SKG-PRC-001 v0.7, README, `project.yaml` (`stem_check` note, trl_evidence).
+
+### Decisions still open
+
+- **O1, concept choice A or B.** Options score 167 and 153, 8.4 % apart, inside the 10 % band, so they were sent without a pick and stay with Amish (SKG-DDR-005). `concept_chosen` stays unset; option A stays the design of record.
+
+### Findings and safety
+
+- The clutch window is narrow (6 % on the third rope layer at ±5 %), so PR-007 stays at risk until CalRig shows the setting holds; the recommendation's option B (an uprated tripod) remains the route if the trials show more bite is worth it.
+- A snag now stops the hoist at the clutch with the pawl holding, instead of opening the grab on the bottom. The new risk is a crew tightening the clutch to stop it slipping (FMEA F3): the locknut is paint-marked, safety stop 6 forbids it, and the load indicator shows each lift's peak.
+- The leg check also shows the 1.4 m T-bar clears the HatchSide legs only below about 1.27 m above ground, while it rises 2 m each time a pole section is added. The build plan now says to keep it low; whether shorter sections or a T-bar height limit is needed is a suggestion for Amish, not decided here.
+- Build plan picture fixed on the way: joint 9 had drawn only the head cheeks, crosshead and crosshead sheave since kit 1.9.1 (the upper sheave, its axle and the shear link were left out because `bv.joint` drops parts that are not cropped); the upper sheave, axle and load indicator are now cropped to the joint and drawn.
+- Cross-repo: SiltHaul and SaltDrag share the hand capstan block with its shear pin hub (SKG-PRC-001). Neither was changed in this session; whether the common block takes the slip clutch is for Amish.
+
+### Recommended next step
+
+Amish decides O1. Then the coordinator renders `media/options.png` and the product views in Cycles. TRL 4 work (clutch setting and load indicator calibration on CalRig, proof load, test-pit bite and bentonite trials) stays on hold under the portfolio cap.
+
+## Session 2026-10-24: kit 1.9.1 upgrade
+
+Kit 1.9.1 upgrade of a TRL 3 design under ROLLOUT.md (`/upgrade-1.8` pipeline documents, then the kit 1.9 detailed CAD for every option). Stage set to P3; TRL stays 3. Work ran 2026-10-24 to 2026-10-25.
+
+### What was added
+
+- **Pipeline documents.** STEM check SKG-STM-001 v0.2 (`docs/01b-stem-check.md`, `docs/04-calcs/stem_check.py`, `stem_results.csv`); concept options SKG-OPT-001 (`docs/02a-concept-options.md`) with a new working principle, option B; user requirements SKG-URS-001 (`docs/03a-user-requirements.md`); product requirements SKG-PRS-001 v0.7 (`docs/03-requirements.md`, supersedes SKG-REQ-001; PR-001 to PR-013); traceability SKG-RTM-001 (`docs/03b-traceability.md`, generated by `.kit/trace.py`); regulatory register SKG-REG-001, feasibility SKG-FEA-001, risk register with hazard analysis and design FMEA SKG-RSK-001, market and viability SKG-MKT-001 (prices cited and dated), project plan SKG-PLN-001 (`docs/07` to `docs/11`); concept selection SKG-DDR-005 (`docs/decisions/0005-concept-selection.md`).
+- **Detailed CAD (kit 1.9, D3).** `cad/src/model.py` now carries the kit 1.9 interface (`OPTIONS`, `PRINCIPLES`, `CHOSEN = "A"`, `OPTION_VIEWS`, `ALLOWED_CONTACTS`, `components(option)`), built from new modules `cad/src/skg_parts.py` (stock, ISO fasteners, welds, bearings, sheaves), `cad/src/skg_detail.py` (option A by group) and `cad/src/skg_option_b.py` (the bailer). `cad/fidelity.json` passes D3; per-part STEP for option A in `cad/step/A/`, assembly STEP for both options; STL at 0.15 mm.
+- **Regenerated.** Drawings SKG-DWG-001 (Rev P4) and 002 (Rev P5); build plan sketches SKG-DWG-101 to 117, joints and steps; concept media (`cad/src/concept_media.py`); `media/options.png` as a labelled SHADED PREVIEW (`cad/src/options_preview.py`), to be replaced by the Cycles render from `.kit/options.py`; appearance model `cad/src/product_model.py` (hero site scene, studio, grab).
+- **Updated.** SKG-CAL-001 v0.5 (masses from the detailed model; section N, detailed model check; section O, independent review); SKG-BLD-001 v0.4; SKG-DEC-001 v0.5; SKG-PRB-001 v0.3; SKG-PRC-001 v0.6; BOM (USD 2,986, new line 35 carbon dioxide monitor); README in the house structure; `project.yaml`.
+
+### STEM check
+
+48 claims for both options: 34 within known science, 7 plausible to confirm at TRL 4 (S2, S3, S8, S10a, S14a, S22, OB3), 7 fail with a fix proposed to Amish (S6, S7, S21, E2, B4, OB5, OB6). Verdict open. Fixed under Amish's standing instruction of 2026-10-23 and recorded in SKG-DEC-001: K1 shear link pin sleeved into true double shear (it bent across an open gap), K2 brake lever geometry (the weight slackened the band), K3 grab assembled and moved only on the line (52.5 kg lifted by two), K4 spoil tub slid on a board (about 50 kg), K5 carbon dioxide monitor (a four-gas detector does not read it), K22 gas read at three depths, not at the collar (from the review). K6 to K21 are design-for-construction fixes the detailed model found (arm pivots at 60 mm, set collars on the crosshead, captive bearing bolts, closed eyes, and others).
+
+**Independent review.** A second agent run headless (`claude -p`), given only the STEM check, SKG-CAL-001, SKG-PRS-001 and `sizing.py`, tried to refute every verdict. It found that ring sinking is refuted by the note's own numbers (central friction 2 kPa against a 1.66 kPa limit), that the shear link and crank pin have no release window between the working pull and the tripod's rating (3 N margin, sheave friction, breakout suction, crank pin above shear yield in normal hoisting), that the proof basis is inconsistent (2 x the rated load exceeds the tripod's proof), that the scraper's 142 N each exceeds sustained limits, and that several "within" rows rested on unsourced assumptions (75 W arm cranking, 12 kN rope, wet brake, fleet angle, quick condition). Responses are in SKG-STM-001, Independent review, Table 2, and SKG-CAL-001 section O.
+
+### Options
+
+| Option | Principle | Score | Parts | Fasteners | Welds | Mass (kg) |
+| --- | --- | --- | --- | --- | --- | --- |
+| A (current design) | Rope grab and under-curb scraper | 167 | 519 | 170 | 103 | 361.3 |
+| B | Dart-valve bailer on a jerk line | 153 | 369 | 102 | 83 | 318.3 |
+
+Counts and masses from `cad/fidelity.json` (option model including the site context). A and B are 8.4 % apart, within 10 %, so both go to Amish without a pick (SKG-DDR-005). The review changed no score: both options fail on ring sinking.
+
+### Requirements not met
+
+- **PR-001 (depth below the water table): not met on paper** after the review; needs a lubricated annulus or jacking (O2).
+- **PR-004 (cycle 3 min): not met on paper** at 3.19 min; about 3.7 min if arm cranking is 35 W.
+- **PR-003 (bite) and PR-007 (proof load): at risk.** PR-006 (tilt) can only be shown in a field trial.
+- PR-012 and PR-013 are new and proposed (O3).
+
+Cost: USD 2,986 against the USD 4,000 budget (unchanged).
+
+### Decisions proposed, awaiting Amish
+
+- **O1** concept: A or B (within 10 %, no pick).
+- **O2** ring sinking: recommended a lubricated annulus planned into the method before any trial.
+- **O3** accept PR-012 and PR-013.
+- **O4** overload window and proof basis: recommended a calibrated slip clutch with a load indicator in place of both shear devices, proof at 1.25 x the rated load.
+- **O5** scraper turning force: recommended a 2.0 m T-bar if it clears the tripod legs, else four people.
+- Items 10 to 13 to confirm when parts are bought (SKG-DEC-001).
+
+### Safety concerns
+
+The overload devices are the main safety finding: as drawn they either trip in normal use or let the line exceed the tripod's rating, and the crank pin fatigues (O4). The gas test now reads at depth (K22). Nobody enters the well; the stop rules stay in SKG-BLD-001.
+
+### Kit bugs and notes
+
+- `render.py --check` requires `media/options.png`, but `.kit/options.py` cannot write it without Blender; worked around with a labelled shaded preview.
+- `cad_parts` has no M14 in its ISO table and no cast-iron material (added locally in `skg_parts.py`).
+- `cad_check` flags any three-face solid as bare (a thimble and a T-bar cap needed edge breaks to pass).
+- Two files carried doc_id SKG-DDR-003 and `render.py --check` did not detect it.
+- The README's Zenodo badge had JSON pasted into it; fixed.
+- OCCT's hidden-line projection (`project_to_viewport`, used by `.kit/drawing.py` and the concept blueprint) hangs without end on the ISO 2341 clevis pins `cad_parts.clevis_pin()` builds (the shear link's 16 x 26 and the drawbar's 20 x 40). Worked around in the repo with `skg_parts.hlr_safe()`, which draws round pins as plain cylinders for views and concept pictures only; the model, STEP and masses keep the real pins.
+- On a shared two-core machine one build-plan run was killed by the memory limit and rerun in parts (`SKG_SHEETS`).
+
+### Recommended next step
+
+Amish decides O1 to O5. Then the coordinator renders `media/options.png` and the product views in Cycles. TRL 4 work (proof load, pin and clutch tests, test-pit bite trial) stays on hold under the portfolio cap.
+
 ## Session 2026-10-04: Amish's requirement decisions carried out (round 3)
 
 Amish Chadha (owner), 2026-10-04: "For round 3, I agree with all your proposed recommendations". For SinkGrab that decides item 5A, open decision 4 of SKG-DEC-001 (scraper sleeve travel), as recommended. Recorded in `docs/decisions/0004-scraper-sleeve-travel.md` (SKG-DDR-004) and moved to Decisions made in `docs/06-design-decisions.md` (SKG-DEC-001 v0.3). Nothing was committed or pushed.
